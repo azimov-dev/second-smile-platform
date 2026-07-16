@@ -1,16 +1,20 @@
 export function getClinicSlug() {
+  // Env var override — used on Vercel and localhost
+  if (import.meta.env.VITE_CLINIC_SLUG) {
+    return import.meta.env.VITE_CLINIC_SLUG;
+  }
+
   const hostname = window.location.hostname;
 
   if (hostname === "localhost" || hostname === "127.0.0.1") {
-    return import.meta.env.VITE_CLINIC_SLUG || "secondsmile";
+    return "secondsmile";
   }
 
-  const parts = hostname.split(".");
-  // clinic1.second-smile.uz -> "clinic1"
-  if (parts.length >= 3) {
-    return parts[0];
+  // Only extract subdomain from *.second-smile.uz
+  if (hostname.endsWith(".second-smile.uz")) {
+    const sub = hostname.replace(".second-smile.uz", "");
+    if (sub && sub !== "www") return sub;
   }
 
-  // fallback for second-smile.uz without subdomain
   return "secondsmile";
 }
