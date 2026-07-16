@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ────────────────────────────────────────────────────────────────
+   1. Your custom utility classes (v4 compatible)
+   ──────────────────────────────────────────────────────────────── */
+@layer utilities {
+  .border-border {
+    border-color: hsl(var(--border));
+  }
+  .bg-border {
+    background-color: hsl(var(--border));
+  }
+  .text-foreground {
+    color: hsl(var(--foreground));
+  }
+  .bg-background {
+    background-color: hsl(var(--background));
+  }
+  .ring-offset-background {
+    ring-offset-color: hsl(var(--background));
+  }
+}
+
+/* Focus ring (replaces the old outline-ring/50 that broke the build) */
+@layer components {
+  .focus-ring {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2 ring-offset-background;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────────
+   2. Your CSS variables (exactly as you had them)
+   ──────────────────────────────────────────────────────────────── */
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --radius: 0.625rem;
+  /* … all your other variables … */
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  /* … the rest of your dark variables exactly as you posted … */
+}
+
+/* ────────────────────────────────────────────────────────────────
+   3. Base styles – the only lines that were breaking the build
+   ──────────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border;
+    /* removed outline-ring/50 completely – it doesn’t exist in v4 */
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+}
