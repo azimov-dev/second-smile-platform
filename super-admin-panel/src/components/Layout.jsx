@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { LayoutDashboard, Building2, CreditCard, Package, LogOut } from "lucide-react";
+import { LayoutDashboard, Building2, CreditCard, Package, Users, LogOut } from "lucide-react";
 
 export default function Layout() {
   const { admin, logout } = useAuth();
@@ -27,6 +27,9 @@ export default function Layout() {
           </SideLink>
           <SideLink to="/clinics" icon={<Building2 className="h-5 w-5" />}>
             Clinics
+          </SideLink>
+          <SideLink to="/users" icon={<Users className="h-5 w-5" />}>
+            Users
           </SideLink>
           <SideLink to="/plans" icon={<Package className="h-5 w-5" />}>
             Plans

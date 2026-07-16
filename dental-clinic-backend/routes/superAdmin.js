@@ -249,4 +249,56 @@ router.get("/payments", async (req, res) => {
   }
 });
 
+// ===== USERS =====
+router.get("/users", async (req, res) => {
+  try {
+    const where = {};
+    if (req.query.clinic_id) where.clinic_id = req.query.clinic_id;
+
+    const users = await User.findAll({
+      where,
+      attributes: ["id", "clinic_id", "full_name", "phone", "role"],
+      include: [{ model: Clinic, as: "clinic", attributes: ["id", "name"] }],
+      order: [["id", "DESC"]],
+    });
+    res.json(users.map((u) => {
+      const plain = u.toJSON();
+      plain.clinic_name = plain.clinic?.name;
+      delete plain.clinic;
+      return plain;
+    }));
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+router.post("/users", async (req, res) => {
+  try {
+    const { clinic_id, full_name, phone, password, role } = req.body;
+    if (!clinic_id || !full_name || !phone || !password || !role) {
+      return res.status(400).json({ message: "All fields required" });
+    }
+
+    const existing = await User.findOne({ where: { clinic_id, phone } });
+    if (existing) return res.status(409).json({ message: "User with this phone already exists in this clinic" });
+
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await User.create({ clinic_id, full_name, phone, password: hashed, role });
+    res.status(201).json({ id: user.id, clinic_id, full_name, phone, role });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+router.delete("/users/:id", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    await user.destroy();
+    res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 module.exports = router;

@@ -17,6 +17,11 @@ export default function ClinicFormPage() {
     logo_url: "",
     is_active: true,
   });
+  const [adminForm, setAdminForm] = useState({
+    admin_full_name: "",
+    admin_phone: "",
+    admin_password: "",
+  });
   const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState("");
   const [error, setError] = useState("");
@@ -48,6 +53,11 @@ export default function ClinicFormPage() {
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   }
 
+  function handleAdminChange(e) {
+    const { name, value } = e.target;
+    setAdminForm((prev) => ({ ...prev, [name]: value }));
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -57,7 +67,7 @@ export default function ClinicFormPage() {
       if (isEdit) {
         await adminApi(`/clinics/${id}`, { method: "PUT", token, body: form });
       } else {
-        const body = { ...form };
+        const body = { ...form, ...adminForm };
         if (selectedPlan) body.plan_id = Number(selectedPlan);
         await adminApi("/clinics", { method: "POST", token, body });
       }
@@ -90,19 +100,29 @@ export default function ClinicFormPage() {
         <Field label="Logo URL" name="logo_url" value={form.logo_url} onChange={handleChange} />
 
         {!isEdit && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>
-            <select
-              value={selectedPlan}
-              onChange={(e) => setSelectedPlan(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
-            >
-              <option value="">No plan</option>
-              {plans.map((p) => (
-                <option key={p.id} value={p.id}>{p.name} — {p.price_monthly?.toLocaleString()} UZS/mo</option>
-              ))}
-            </select>
-          </div>
+          <>
+            <hr className="my-4" />
+            <h3 className="font-semibold text-gray-800">Clinic Admin Account</h3>
+            <Field label="Admin Full Name" name="admin_full_name" value={adminForm.admin_full_name} onChange={handleAdminChange} required />
+            <Field label="Admin Phone (login)" name="admin_phone" value={adminForm.admin_phone} onChange={handleAdminChange} required placeholder="e.g. 901234567" />
+            <Field label="Admin Password" name="admin_password" type="password" value={adminForm.admin_password} onChange={handleAdminChange} required />
+
+            <hr className="my-4" />
+            <h3 className="font-semibold text-gray-800">Subscription Plan</h3>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Plan</label>
+              <select
+                value={selectedPlan}
+                onChange={(e) => setSelectedPlan(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              >
+                <option value="">No plan</option>
+                {plans.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name} — {p.price_monthly?.toLocaleString()} UZS/mo</option>
+                ))}
+              </select>
+            </div>
+          </>
         )}
 
         <div className="flex items-center gap-2">
@@ -140,11 +160,12 @@ export default function ClinicFormPage() {
   );
 }
 
-function Field({ label, ...props }) {
+function Field({ label, type = "text", ...props }) {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
       <input
+        type={type}
         {...props}
         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-100 outline-none"
       />
