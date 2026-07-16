@@ -20,6 +20,7 @@ app.use(
         /^https?:\/\/localhost:\d+$/,
         /^https:\/\/([a-z0-9-]+\.)?second-smile\.uz$/,
         /^https:\/\/admin\.second-smile\.uz$/,
+        /^https:\/\/second-smile[a-z0-9-]*\.vercel\.app$/,
       ];
       if (allowed.some((pattern) => pattern.test(origin))) {
         callback(null, true);

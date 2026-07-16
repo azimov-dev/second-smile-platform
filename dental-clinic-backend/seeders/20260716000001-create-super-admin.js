@@ -3,12 +3,12 @@ const bcrypt = require("bcrypt");
 
 module.exports = {
   async up(queryInterface) {
-    const hashedPassword = await bcrypt.hash("admin123", 10);
+    const hashedPassword = await bcrypt.hash("azimov17!", 10);
     await queryInterface.bulkInsert("super_admins", [
       {
-        username: "admin",
+        username: "azymv",
         password: hashedPassword,
-        full_name: "Super Admin",
+        full_name: "Azimov",
         is_active: true,
         created_at: new Date(),
         updated_at: new Date(),
@@ -17,6 +17,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    await queryInterface.bulkDelete("super_admins", { username: "admin" });
+    await queryInterface.bulkDelete("super_admins", { username: "azymv" });
   },
 };
