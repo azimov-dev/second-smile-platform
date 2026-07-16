@@ -1,0 +1,23 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/second-smile-platform
+            git pull origin main
+            cd dental-clinic-backend
+            npm install --production
+            npx sequelize-cli db:migrate
+            pm2 restart second-smile-api || pm2 start index.js --name second-smile-api
