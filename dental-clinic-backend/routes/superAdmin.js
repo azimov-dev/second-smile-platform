@@ -268,6 +268,7 @@ router.get("/users", async (req, res) => {
       return plain;
     }));
   } catch (err) {
+    console.error("GET /users error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
@@ -286,6 +287,7 @@ router.post("/users", async (req, res) => {
     const user = await User.create({ clinic_id, full_name, phone, password: hashed, role });
     res.status(201).json({ id: user.id, clinic_id, full_name, phone, role });
   } catch (err) {
+    console.error("POST /users error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
