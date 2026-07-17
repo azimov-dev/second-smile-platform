@@ -1022,46 +1022,41 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
         document.body
       )}
 
-      {/* Treatment Plan Summary Modal - Senior-friendly design */}
+      {/* Treatment Plan Summary Modal */}
       {showPlanModal && createPortal(
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-y-auto">
-            {/* Header with large title */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-t-3xl">
-              <div className="flex justify-between items-start">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-5 rounded-t-2xl">
+              <div className="flex justify-between items-center">
                 <div>
-                  <p className="text-blue-100 text-lg mb-1">
+                  <p className="text-blue-200 text-sm">
                     {t("treatment.plan") || "Davolash rejasi"}
                   </p>
-                  <h2 className="text-2xl md:text-3xl font-bold">
+                  <h2 className="text-xl font-bold">
                     {planSummary?.plan?.title || `#${planSummary?.plan?.id || ""}`}
                   </h2>
-                  {planSummary?.patient && (
-                    <p className="text-blue-100 text-lg mt-2">
-                      👤 {planSummary.patient.first_name} {planSummary.patient.last_name}
-                    </p>
-                  )}
                 </div>
                 <button
                   onClick={() => setShowPlanModal(false)}
-                  className="p-2 hover:bg-white/20 rounded-full transition"
+                  className="p-2 hover:bg-white/20 rounded-lg transition"
                 >
-                  <X className="w-8 h-8" />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
             </div>
 
-            <div className="p-6 md:p-8 space-y-8">
+            <div className="p-5 space-y-5">
               {loadingPlanSummary ? (
-                <div className="py-16 text-center">
-                  <Loader2 className="w-12 h-12 animate-spin mx-auto text-blue-500" />
-                  <p className="mt-4 text-xl text-gray-500">
+                <div className="py-12 text-center">
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-500" />
+                  <p className="mt-3 text-gray-500">
                     {t("common.loading") || "Yuklanmoqda..."}
                   </p>
                 </div>
               ) : (
                 <>
-                  {/* Progress Section - Very visual */}
+                  {/* Progress bar */}
                   {(() => {
                     const appointments = planSummary?.appointments || [];
                     const completed = appointments.filter(a =>
@@ -1071,216 +1066,141 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
                     const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
 
                     return (
-                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border-2 border-blue-200">
-                        <div className="flex items-center justify-between mb-4">
-                          <h3 className="text-xl font-bold text-gray-800">
-                            📊 {t("treatment.progress") || "Jarayon"}
-                          </h3>
-                          <span className="text-3xl font-bold text-blue-600">
-                            {completed} / {total}
+                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-700">
+                            {t("treatment.progress") || "Jarayon"}
+                          </span>
+                          <span className="text-sm font-bold text-blue-600">
+                            {completed} / {total} ({percent}%)
                           </span>
                         </div>
-
-                        {/* Big progress bar */}
-                        <div className="h-8 bg-gray-200 rounded-full overflow-hidden mb-3">
+                        <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                           <div
-                            className={`h-full rounded-full transition-all duration-500 ${
-                              percent === 100
-                                ? "bg-gradient-to-r from-green-500 to-emerald-500"
-                                : "bg-gradient-to-r from-blue-500 to-indigo-500"
+                            className={`h-full rounded-full transition-all ${
+                              percent === 100 ? "bg-green-500" : "bg-blue-500"
                             }`}
                             style={{ width: `${percent}%` }}
                           />
                         </div>
-
-                        <div className="flex justify-between text-lg">
-                          <span className="text-gray-600">
-                            {percent === 100
-                              ? (t("treatment.allCompleted") || "✅ Barcha qabullar yakunlandi!")
-                              : (t("treatment.visitsRemaining") || `${total - completed} ta qabul qoldi`)
-                            }
-                          </span>
-                          <span className="font-bold text-blue-600">{percent}%</span>
-                        </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                          {percent === 100
+                            ? (t("treatment.allCompleted") || "Barcha qabullar yakunlandi")
+                            : `${total - completed} ${t("treatment.visitsRemaining") || "ta qabul qoldi"}`
+                          }
+                        </p>
                       </div>
                     );
                   })()}
 
-                  {/* Money Summary - Big and clear */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Total Cost */}
-                    <div className="bg-gray-50 rounded-2xl p-5 border-2 border-gray-200">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-3xl">💰</span>
-                        <span className="text-lg text-gray-600">
-                          {t("common.total") || "Jami narx"}
-                        </span>
-                      </div>
-                      <p className="text-2xl md:text-3xl font-bold text-gray-900">
-                        {formatMoney(planSummary?.totals?.total || 0)}
-                        <span className="text-lg font-normal text-gray-500 ml-1">so'm</span>
+                  {/* Money Summary */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                      <p className="text-xs text-gray-500 mb-1">{t("common.total") || "Jami"}</p>
+                      <p className="text-lg font-bold text-gray-900">
+                        {formatMoney(planSummary?.totals?.total || 0)} <span className="text-sm font-normal">so'm</span>
                       </p>
                     </div>
-
-                    {/* Discount */}
+                    <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+                      <p className="text-xs text-green-600 mb-1">{t("common.paid") || "To'langan"}</p>
+                      <p className="text-lg font-bold text-green-600">
+                        {formatMoney(planSummary?.totals?.paid || 0)} <span className="text-sm font-normal">so'm</span>
+                      </p>
+                    </div>
                     {(planSummary?.totals?.discount || 0) > 0 && (
-                      <div className="bg-orange-50 rounded-2xl p-5 border-2 border-orange-200">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="text-3xl">🏷️</span>
-                          <span className="text-lg text-orange-700">
-                            {t("common.discount") || "Chegirma"}
-                          </span>
-                        </div>
-                        <p className="text-2xl md:text-3xl font-bold text-orange-600">
-                          -{formatMoney(planSummary?.totals?.discount || 0)}
-                          <span className="text-lg font-normal ml-1">so'm</span>
+                      <div className="bg-orange-50 rounded-xl p-4 border border-orange-200">
+                        <p className="text-xs text-orange-600 mb-1">{t("common.discount") || "Chegirma"}</p>
+                        <p className="text-lg font-bold text-orange-600">
+                          -{formatMoney(planSummary?.totals?.discount || 0)} <span className="text-sm font-normal">so'm</span>
                         </p>
                       </div>
                     )}
-
-                    {/* Paid - Green */}
-                    <div className="bg-green-50 rounded-2xl p-5 border-2 border-green-300">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-3xl">✅</span>
-                        <span className="text-lg text-green-700">
-                          {t("common.paid") || "To'langan"}
-                        </span>
-                      </div>
-                      <p className="text-2xl md:text-3xl font-bold text-green-600">
-                        {formatMoney(planSummary?.totals?.paid || 0)}
-                        <span className="text-lg font-normal ml-1">so'm</span>
-                      </p>
-                    </div>
-
-                    {/* Debt - Red */}
-                    <div className={`rounded-2xl p-5 border-2 ${
+                    <div className={`rounded-xl p-4 border ${
                       (planSummary?.totals?.debt || 0) > 0
-                        ? "bg-red-50 border-red-300"
-                        : "bg-green-50 border-green-300"
+                        ? "bg-red-50 border-red-200"
+                        : "bg-green-50 border-green-200"
                     }`}>
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-3xl">
-                          {(planSummary?.totals?.debt || 0) > 0 ? "⏳" : "🎉"}
-                        </span>
-                        <span className={`text-lg ${
-                          (planSummary?.totals?.debt || 0) > 0 ? "text-red-700" : "text-green-700"
-                        }`}>
-                          {t("common.remaining") || "Qolgan summa"}
-                        </span>
-                      </div>
-                      <p className={`text-2xl md:text-3xl font-bold ${
+                      <p className={`text-xs mb-1 ${
+                        (planSummary?.totals?.debt || 0) > 0 ? "text-red-600" : "text-green-600"
+                      }`}>
+                        {t("common.debt") || "Qarzdorlik"}
+                      </p>
+                      <p className={`text-lg font-bold ${
                         (planSummary?.totals?.debt || 0) > 0 ? "text-red-600" : "text-green-600"
                       }`}>
                         {(planSummary?.totals?.debt || 0) > 0
-                          ? formatMoney(planSummary?.totals?.debt || 0)
-                          : (t("common.fullyPaid") || "To'liq to'langan!")
+                          ? `${formatMoney(planSummary?.totals?.debt || 0)} so'm`
+                          : (t("common.fullyPaid") || "To'langan")
                         }
-                        {(planSummary?.totals?.debt || 0) > 0 && (
-                          <span className="text-lg font-normal ml-1">so'm</span>
-                        )}
                       </p>
                     </div>
                   </div>
 
-                  {/* Timeline of Visits */}
+                  {/* Appointments List */}
                   <div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                      📅 {t("treatment.visitHistory") || "Qabullar tarixi"}
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                      {t("treatment.visitHistory") || "Qabullar"}
                     </h3>
-
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {(planSummary?.appointments || []).length === 0 ? (
-                        <div className="text-center py-8 text-gray-500 text-lg">
+                        <p className="text-sm text-gray-500 text-center py-4">
                           {t("appointments.noAppointmentsForDay") || "Qabullar yo'q"}
-                        </div>
+                        </p>
                       ) : (
                         (planSummary?.appointments || []).map((appt, index) => {
                           const isCompleted = appt.treatment?.status === "completed" || appt.status === "completed";
                           const isCancelled = appt.treatment?.status === "cancelled" || appt.status === "cancelled";
-                          const appointmentDate = new Date(appt.appointment_date);
-                          const isUpcoming = appointmentDate > new Date() && !isCompleted && !isCancelled;
 
                           return (
                             <div
                               key={appt.id}
-                              className={`rounded-2xl p-5 border-2 transition-all ${
+                              className={`rounded-lg p-3 border flex items-center justify-between ${
                                 isCompleted
-                                  ? "bg-green-50 border-green-300"
+                                  ? "bg-green-50 border-green-200"
                                   : isCancelled
-                                    ? "bg-gray-100 border-gray-300 opacity-60"
-                                    : isUpcoming
-                                      ? "bg-blue-50 border-blue-300"
-                                      : "bg-yellow-50 border-yellow-300"
+                                    ? "bg-gray-50 border-gray-200 opacity-60"
+                                    : "bg-yellow-50 border-yellow-200"
                               }`}
                             >
-                              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                {/* Left: Visit number and status */}
-                                <div className="flex items-center gap-4">
-                                  <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold ${
-                                    isCompleted
-                                      ? "bg-green-500 text-white"
-                                      : isCancelled
-                                        ? "bg-gray-400 text-white"
-                                        : isUpcoming
-                                          ? "bg-blue-500 text-white"
-                                          : "bg-yellow-500 text-white"
+                              <div className="flex items-center gap-3">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                                  isCompleted
+                                    ? "bg-green-500 text-white"
+                                    : isCancelled
+                                      ? "bg-gray-400 text-white"
+                                      : "bg-yellow-500 text-white"
+                                }`}>
+                                  {isCompleted ? "✓" : index + 1}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">
+                                    {new Date(appt.appointment_date).toLocaleDateString("uz-UZ")}
+                                  </p>
+                                  <p className={`text-xs ${
+                                    isCompleted ? "text-green-600" : isCancelled ? "text-gray-500" : "text-yellow-600"
                                   }`}>
-                                    {isCompleted ? "✓" : isCancelled ? "✕" : index + 1}
-                                  </div>
-                                  <div>
-                                    <p className="text-xl font-bold text-gray-900">
-                                      {appointmentDate.toLocaleDateString("uz-UZ", {
-                                        day: "numeric",
-                                        month: "long",
-                                        year: "numeric"
-                                      })}
-                                    </p>
-                                    <p className={`text-lg font-medium ${
-                                      isCompleted
-                                        ? "text-green-600"
-                                        : isCancelled
-                                          ? "text-gray-500"
-                                          : isUpcoming
-                                            ? "text-blue-600"
-                                            : "text-yellow-600"
-                                    }`}>
-                                      {isCompleted
-                                        ? (t("common.completed") || "✅ Yakunlangan")
-                                        : isCancelled
-                                          ? (t("common.cancelled") || "❌ Bekor qilingan")
-                                          : isUpcoming
-                                            ? (t("common.upcoming") || "🗓 Rejalashtirilgan")
-                                            : (t("common.inProgress") || "⏳ Jarayonda")
-                                      }
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {/* Right: Doctor and amount */}
-                                <div className="text-right md:text-right">
-                                  <p className="text-lg text-gray-600">
-                                    👨‍⚕️ {appt.doctor?.full_name || "-"}
-                                  </p>
-                                  <p className="text-xl font-bold text-gray-900">
-                                    {formatMoney(appt.treatment?.total_amount || 0)} so'm
+                                    {isCompleted
+                                      ? (t("common.completed") || "Yakunlangan")
+                                      : isCancelled
+                                        ? (t("common.cancelled") || "Bekor qilingan")
+                                        : (t("common.inProgress") || "Jarayonda")
+                                    }
                                   </p>
                                 </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-medium text-gray-900">
+                                  {formatMoney(appt.treatment?.total_amount || 0)} so'm
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  {appt.doctor?.full_name || "-"}
+                                </p>
                               </div>
                             </div>
                           );
                         })
                       )}
                     </div>
-                  </div>
-
-                  {/* Big Close Button at bottom */}
-                  <div className="pt-4">
-                    <button
-                      onClick={() => setShowPlanModal(false)}
-                      className="w-full py-4 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xl font-bold rounded-2xl transition flex items-center justify-center gap-2"
-                    >
-                      ✕ {t("common.close") || "Yopish"}
-                    </button>
                   </div>
                 </>
               )}
