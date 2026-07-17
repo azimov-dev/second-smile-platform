@@ -437,7 +437,7 @@ export function Patients() {
                     onChange={handleChange}
                     disabled={isSubmitting}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50"
-                    placeholder="Ism"
+                    placeholder={t("patients.form.firstName") || "Ism"}
                   />
                 </div>
                 <div>
@@ -452,7 +452,7 @@ export function Patients() {
                     onChange={handleChange}
                     disabled={isSubmitting}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50"
-                    placeholder="Familiya"
+                    placeholder={t("patients.form.lastName") || "Familiya"}
                   />
                 </div>
               </div>
@@ -501,7 +501,7 @@ export function Patients() {
                   onChange={handleChange}
                   disabled={isSubmitting}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50"
-                  placeholder="Manzil (ixtiyoriy)"
+                  placeholder={t("patients.form.addressPlaceholder") || "Manzil (ixtiyoriy)"}
                 />
               </div>
 

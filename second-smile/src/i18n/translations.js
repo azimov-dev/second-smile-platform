@@ -50,6 +50,7 @@ export const translations = {
         phone: "Telefon",
         birthDate: "Tug'ilgan sana",
         address: "Manzil",
+        addressPlaceholder: "Manzil (ixtiyoriy)",
         medicalHistory: "Tibbiy tarix",
         medicalHistoryPlaceholder:
           "Kasalliklar, allergiyalar, doimiy dorilar...",
@@ -536,6 +537,7 @@ export const translations = {
         phone: "Telefon",
         birthDate: "Tuğilgan sana",
         address: "Manzil",
+        addressPlaceholder: "Manzil (ixtiyoriy)",
         medicalHistory: "Tibbiy tarix",
         medicalHistoryPlaceholder: "Kasalliklar, allergiyalar, doimiy dorilar...",
       },
@@ -1008,6 +1010,7 @@ export const translations = {
         phone: "Телефон",
         birthDate: "Туғилган сана",
         address: "Манзил",
+        addressPlaceholder: "Манзил (ихтиёрий)",
         medicalHistory: "Тиббий тарих",
         medicalHistoryPlaceholder: "Касалликлар, аллергиялар, доимий дорилар...",
       },
@@ -1480,6 +1483,7 @@ export const translations = {
         phone: "Телефон",
         birthDate: "Дата рождения",
         address: "Адрес",
+        addressPlaceholder: "Адрес (необязательно)",
         medicalHistory: "Медицинская история",
         medicalHistoryPlaceholder:
           "Заболевания, аллергии, постоянные лекарства...",
@@ -1960,20 +1964,20 @@ export const translations = {
         phone: "Phone",
         birthDate: "Birth Date",
         address: "Address",
-        form: {
-          firstName: "First Name",
-          lastName: "Last Name",
-          phone: "Phone",
-          birthDate: "Birth Date",
-          address: "Address",
-          medicalHistory: "Medical History",
-          medicalHistoryPlaceholder:
-            "Diseases, allergies, regular medications...",
-        },
+        actions: "Actions",
+      },
+      form: {
+        firstName: "First Name",
+        lastName: "Last Name",
+        phone: "Phone",
         birthDate: "Birth Date",
         address: "Address",
-        noMedicalHistory: "No information provided",
+        addressPlaceholder: "Address (optional)",
+        medicalHistory: "Medical History",
+        medicalHistoryPlaceholder:
+          "Diseases, allergies, regular medications...",
       },
+      noMedicalHistory: "No information provided",
     },
     dashboard: {
       title: "Dashboard",
