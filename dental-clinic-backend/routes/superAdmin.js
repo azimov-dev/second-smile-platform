@@ -184,6 +184,56 @@ router.get("/clinics/:id/stats", async (req, res) => {
   }
 });
 
+// ===== CLINIC SUBSCRIPTION MANAGEMENT =====
+router.post("/clinics/:id/subscription", async (req, res) => {
+  try {
+    const { plan_id, duration_days } = req.body;
+    const clinicId = req.params.id;
+
+    if (!plan_id) return res.status(400).json({ message: "plan_id required" });
+
+    const clinic = await Clinic.findByPk(clinicId);
+    if (!clinic) return res.status(404).json({ message: "Clinic not found" });
+
+    const plan = await Plan.findByPk(plan_id);
+    if (!plan) return res.status(404).json({ message: "Plan not found" });
+
+    // Deactivate any existing active subscription
+    await Subscription.update(
+      { status: "cancelled" },
+      { where: { clinic_id: clinicId, status: ["active", "trial"] } },
+    );
+
+    // Create new active subscription
+    const days = duration_days || 30;
+    const sub = await Subscription.create({
+      clinic_id: clinicId,
+      plan_id: plan.id,
+      status: "active",
+      current_period_start: new Date(),
+      current_period_end: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
+    });
+
+    res.status(201).json(sub);
+  } catch (err) {
+    console.error("POST /clinics/:id/subscription error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+router.delete("/clinics/:id/subscription", async (req, res) => {
+  try {
+    const clinicId = req.params.id;
+    await Subscription.update(
+      { status: "cancelled", cancelled_at: new Date() },
+      { where: { clinic_id: clinicId, status: ["active", "trial"] } },
+    );
+    res.json({ message: "Subscription cancelled" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 // ===== PLANS =====
 router.get("/plans", async (req, res) => {
   try {

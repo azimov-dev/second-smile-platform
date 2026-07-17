@@ -7,6 +7,7 @@ import ClinicFormPage from "./pages/ClinicFormPage.jsx";
 import PlansPage from "./pages/PlansPage.jsx";
 import PaymentsPage from "./pages/PaymentsPage.jsx";
 import UsersPage from "./pages/UsersPage.jsx";
+import SubscriptionsPage from "./pages/SubscriptionsPage.jsx";
 import Layout from "./components/Layout.jsx";
 
 function ProtectedRoute({ children }) {
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="clinics/:id" element={<ClinicFormPage />} />
         <Route path="plans" element={<PlansPage />} />
         <Route path="users" element={<UsersPage />} />
+        <Route path="subscriptions" element={<SubscriptionsPage />} />
         <Route path="payments" element={<PaymentsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
