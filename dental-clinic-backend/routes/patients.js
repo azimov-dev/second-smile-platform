@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/authMiddleware");
 const requiredRole = require("../middleware/adminMiddleware");
+const { checkPatientLimit } = require("../middleware/planLimits");
 const patientController = require("../controllers/patientController");
 
 /**
@@ -113,6 +114,7 @@ router.post(
   "/",
   auth,
   requiredRole(["reception", "admin", "doctor"]),
+  checkPatientLimit,
   patientController.createPatient,
 );
 router.get(

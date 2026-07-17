@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/authMiddleware");
 const requiredRole = require("../middleware/adminMiddleware"); // assuming this accepts roles array
+const { checkAppointmentLimit } = require("../middleware/planLimits");
 const appointmentController = require("../controllers/appointmentController");
 
 /**
@@ -36,6 +37,7 @@ router.post(
   "/",
   auth,
   requiredRole(["reception", "admin", "doctor"]),
+  checkAppointmentLimit,
   appointmentController.createAppointment,
 );
 

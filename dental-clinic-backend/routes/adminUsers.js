@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/authMiddleware");
 const requiredRole = require("../middleware/adminMiddleware");
+const { checkDoctorLimit } = require("../middleware/planLimits");
 const adminUserController = require("../controllers/adminUserController");
 
 /**
@@ -59,7 +60,7 @@ router.get(
  *       201:
  *         description: Created
  */
-router.post("/", auth, requiredRole(["admin"]), adminUserController.createUser);
+router.post("/", auth, requiredRole(["admin"]), checkDoctorLimit, adminUserController.createUser);
 
 /**
  * @swagger
