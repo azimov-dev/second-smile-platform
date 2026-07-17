@@ -21,12 +21,22 @@ export function LanguageProvider({ children }) {
     const pack = translations[lang] || translations.uz;
 
     // Get nested value
-    const value = key
+    let value = key
       .split(".")
       .reduce(
         (obj, k) => (obj && obj[k] !== undefined ? obj[k] : undefined),
         pack,
       );
+
+    // Fallback to uz if current lang doesn't have the key (e.g. uz_cyr missing keys)
+    if (value === undefined && lang !== "uz") {
+      value = key
+        .split(".")
+        .reduce(
+          (obj, k) => (obj && obj[k] !== undefined ? obj[k] : undefined),
+          translations.uz,
+        );
+    }
 
     let result = value !== undefined ? value : fallback || key;
 
