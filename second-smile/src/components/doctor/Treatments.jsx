@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import {
   Loader2,
@@ -942,7 +943,7 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
       </div>
 
       {/* Payment Modal */}
-      {showPaymentModal && (
+      {showPaymentModal && createPortal(
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
             <div className="p-6 border-b border-gray-200 flex justify-between items-center">
@@ -1017,11 +1018,12 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Treatment Plan Summary Modal */}
-      {showPlanModal && (
+      {showPlanModal && createPortal(
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-200 flex justify-between items-center">
@@ -1120,11 +1122,12 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Services & Receipt Modal */}
-      {showServicesModal && selectedTreatment && (
+      {showServicesModal && selectedTreatment && createPortal(
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-6">
@@ -1269,7 +1272,8 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

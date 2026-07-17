@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Loader2,
   ChevronLeft,
@@ -1835,7 +1836,7 @@ export function ScheduleCalendar() {
         )}
       </div>
 
-      {showAddModal && (
+      {showAddModal && createPortal(
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-w-[95vw] max-h-[95vh] overflow-y-auto overflow-x-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-8 rounded-t-3xl">
@@ -2160,10 +2161,11 @@ export function ScheduleCalendar() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {showBusyModal && (
+      {showBusyModal && createPortal(
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-3 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <div className="bg-gradient-to-r from-orange-500 to-pink-600 text-white p-5 rounded-t-2xl">
@@ -2325,7 +2327,8 @@ export function ScheduleCalendar() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

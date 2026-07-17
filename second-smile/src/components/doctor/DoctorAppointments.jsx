@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
   Calendar,
@@ -2073,7 +2074,7 @@ export function DoctorAppointments() {
       </div>
 
       {/* Cancel Confirmation Modal */}
-      {showCancelConfirm && (
+      {showCancelConfirm && createPortal(
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
             <h3 className="text-2xl font-bold text-slate-900 mb-4">
@@ -2105,11 +2106,12 @@ export function DoctorAppointments() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* New Follow-up Appointment Modal */}
-      {showAddModal && (
+      {showAddModal && createPortal(
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-w-[95vw] max-h-[95vh] overflow-y-auto overflow-x-hidden">
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
@@ -2399,10 +2401,11 @@ export function DoctorAppointments() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
       {/* Busy / Block Time Modal */}
-      {showBusyModal && (
+      {showBusyModal && createPortal(
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-w-[95vw] max-h-[95vh] overflow-y-auto overflow-x-hidden">
             <div className="bg-gradient-to-r from-pink-600 to-pink-700 text-white p-6">
@@ -2524,7 +2527,8 @@ export function DoctorAppointments() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

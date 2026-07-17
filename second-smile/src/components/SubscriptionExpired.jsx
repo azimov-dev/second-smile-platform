@@ -1,11 +1,12 @@
 import { AlertTriangle } from "lucide-react";
+import { createPortal } from "react-dom";
 import { useLanguage } from "../i18n/LanguageContext.jsx";
 
 export default function SubscriptionExpired() {
   const { t } = useLanguage();
 
-  return (
-    <div className="fixed inset-0 isolate z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
       <div className="mx-4 w-full max-w-lg rounded-2xl bg-white p-8 text-center shadow-2xl">
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-amber-100">
           <AlertTriangle className="h-10 w-10 text-amber-600" />
@@ -22,6 +23,7 @@ export default function SubscriptionExpired() {
             "Yordam uchun: info@second-smile.uz"}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
