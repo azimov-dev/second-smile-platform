@@ -114,17 +114,16 @@ export function ScheduleCalendar() {
 
   const formatHeaderDate = () => {
     const lang = localStorage.getItem("lang") || "uz";
+    const localeMap = { uz: "uz-UZ", uz_cyr: "uz-Cyrl-UZ", uz_new: "uz-UZ", ru: "ru-RU", en: "en-US" };
+    const locale = localeMap[lang] || "uz-UZ";
 
     if (viewMode === "day") {
-      const str = selectedDate.toLocaleDateString(
-        `${lang}-${lang.toUpperCase()}`,
-        {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        },
-      );
+      const str = selectedDate.toLocaleDateString(locale, {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
@@ -136,17 +135,14 @@ export function ScheduleCalendar() {
 
       const startStr = start.getDate();
       const endStr = end.getDate();
-      const monthYear = selectedDate.toLocaleDateString(
-        `${lang}-${lang.toUpperCase()}`,
-        {
-          month: "long",
-          year: "numeric",
-        },
-      );
+      const monthYear = selectedDate.toLocaleDateString(locale, {
+        month: "long",
+        year: "numeric",
+      });
       return `${startStr} - ${endStr} ${monthYear}`;
     }
 
-    return selectedDate.toLocaleDateString(`${lang}-${lang.toUpperCase()}`, {
+    return selectedDate.toLocaleDateString(locale, {
       month: "long",
       year: "numeric",
     });
@@ -766,13 +762,14 @@ export function ScheduleCalendar() {
             <ChevronLeft className="w-6 h-6 text-blue-500" />
           </button>
           <div className="text-base font-semibold text-gray-900">
-            {selectedDate.toLocaleDateString(
-              localStorage.getItem("lang") || "uz",
-              {
+            {(() => {
+              const lang = localStorage.getItem("lang") || "uz";
+              const localeMap = { uz: "uz-UZ", uz_cyr: "uz-Cyrl-UZ", uz_new: "uz-UZ", ru: "ru-RU", en: "en-US" };
+              return selectedDate.toLocaleDateString(localeMap[lang] || "uz-UZ", {
                 month: "long",
                 year: "numeric",
-              },
-            )}
+              });
+            })()}
           </div>
           <button
             onClick={goNextMobile}

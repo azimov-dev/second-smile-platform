@@ -76,8 +76,9 @@ export function ReceptionDashboard() {
 
   const today = new Date().toISOString().slice(0, 10);
   const lang = localStorage.getItem("lang") || "uz";
+  const localeMap = { uz: "uz-UZ", uz_cyr: "uz-Cyrl-UZ", uz_new: "uz-UZ", ru: "ru-RU", en: "en-US" };
   const todayFormatted = new Date(today).toLocaleDateString(
-    `${lang}-${lang.toUpperCase()}`,
+    localeMap[lang] || "uz-UZ",
     {
       weekday: "long",
       year: "numeric",

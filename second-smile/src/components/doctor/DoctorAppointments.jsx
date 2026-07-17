@@ -21,7 +21,8 @@ import { extractUzLocalDigits, toUzPhone } from "../../utils/uzPhone.js";
 
 const getLocale = () => {
   const lang = localStorage.getItem("lang") || "uz";
-  return `${lang}-${lang.toUpperCase()}`;
+  const localeMap = { uz: "uz-UZ", uz_cyr: "uz-Cyrl-UZ", uz_new: "uz-UZ", ru: "ru-RU", en: "en-US" };
+  return localeMap[lang] || "uz-UZ";
 };
 
 const formatDisplayDate = (dateStr) => {

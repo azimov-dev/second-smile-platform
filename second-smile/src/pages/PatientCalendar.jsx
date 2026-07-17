@@ -34,7 +34,9 @@ export function PatientCalendar() {
     const [year, month, day] = dateStr.split("-").map(Number);
     const date = new Date(year, month - 1, day);
     const lang = localStorage.getItem("lang") || "uz";
-    return date.toLocaleDateString(`${lang}-${lang.toUpperCase()}`, {
+    const localeMap = { uz: "uz-UZ", uz_cyr: "uz-Cyrl-UZ", uz_new: "uz-UZ", ru: "ru-RU", en: "en-US" };
+    const locale = localeMap[lang] || "uz-UZ";
+    return date.toLocaleDateString(locale, {
       weekday: "long",
       year: "numeric",
       month: "long",
