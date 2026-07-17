@@ -11,8 +11,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ENUM("admin", "doctor", "reception"),
         allowNull: false,
       },
-      resetPasswordToken: { type: DataTypes.STRING, allowNull: true },
-      resetPasswordExpires: { type: DataTypes.BIGINT, allowNull: true },
     },
     {
       freezeTableName: true,
