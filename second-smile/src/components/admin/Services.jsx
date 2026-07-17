@@ -467,7 +467,7 @@ export function Services() {
 
       {/* Add/Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
           <div className="w-full max-w-xl rounded-2xl bg-white shadow-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-sky-600 to-sky-700 text-white px-6 py-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold">
@@ -489,14 +489,14 @@ export function Services() {
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("services") || "Xizmat nomi"}
+                  {t("nameOfService") || "Xizmat nomi"}
                 </label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder={t("nameOfService") || "Masalan: Tish tozalash"}
+                  placeholder={t("nameOfService") || "Xizmat nomi"}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-sky-500"
                 />
               </div>
