@@ -93,7 +93,7 @@ export default function ClinicFormPage() {
           value={form.slug}
           onChange={handleChange}
           required
-          placeholder="e.g. medstar → medstar.second-smile.uz"
+          placeholder="e.g. medstar"
         />
         <Field label="Owner Phone" name="owner_phone" value={form.owner_phone} onChange={handleChange} />
         <Field label="Address" name="address" value={form.address} onChange={handleChange} />

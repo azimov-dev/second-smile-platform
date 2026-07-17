@@ -74,7 +74,7 @@ export default function ClinicsPage() {
             {clinics.map((c) => (
               <tr key={c.id}>
                 <td className="px-4 py-3 font-medium">{c.name}</td>
-                <td className="px-4 py-3 text-gray-500">{c.slug}.second-smile.uz</td>
+                <td className="px-4 py-3 text-gray-500">{c.slug}</td>
                 <td className="px-4 py-3">{c.owner_phone || "—"}</td>
                 <td className="px-4 py-3">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
