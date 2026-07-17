@@ -495,7 +495,7 @@ export function StartTreatment() {
 
       {/* Patient Edit Modal */}
       {showPatientModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[95vh] overflow-y-auto">
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6">
               <div className="flex justify-between items-center">

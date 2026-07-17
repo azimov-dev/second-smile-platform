@@ -1836,7 +1836,7 @@ export function ScheduleCalendar() {
       </div>
 
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-w-[95vw] max-h-[95vh] overflow-y-auto overflow-x-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-8 rounded-t-3xl">
               <div className="flex justify-between items-center">
@@ -2164,7 +2164,7 @@ export function ScheduleCalendar() {
       )}
 
       {showBusyModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-3 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-3 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-w-[95vw] max-h-[90vh] overflow-y-auto overflow-x-hidden">
             <div className="bg-gradient-to-r from-orange-500 to-pink-600 text-white p-5 rounded-t-2xl">
               <div className="flex justify-between items-center">
