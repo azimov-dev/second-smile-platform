@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { apiClient } from "../../api/client.js";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";

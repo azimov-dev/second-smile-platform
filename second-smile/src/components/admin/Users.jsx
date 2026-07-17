@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Plus, Edit2, Trash2, Shield, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { apiClient } from "../../api/client.js";
@@ -354,8 +355,8 @@ export function Users() {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 isolate z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+      {showModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
           <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
               <h3 className="text-xl font-bold text-slate-900">
@@ -468,7 +469,8 @@ export function Users() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

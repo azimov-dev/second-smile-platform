@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Search,
   Plus,
@@ -402,7 +403,7 @@ export function Patients() {
       </div>
 
       {/* Add/Edit Modal */}
-      {showModal && (
+      {showModal && createPortal(
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[95vh] overflow-y-auto">
             <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-5">
@@ -549,7 +550,8 @@ export function Patients() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

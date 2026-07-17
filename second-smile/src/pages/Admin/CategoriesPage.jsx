@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { apiClient } from "../../api/client.js";
 import { useAuth } from "../../features/auth/useAuth";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
@@ -413,8 +414,8 @@ export default function CategoriesPage() {
       </div>
 
       {/* Add/Edit Modal */}
-      {showModal && (
-        <div className="fixed inset-0 isolate z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+      {showModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
           <div className="w-full max-w-xl rounded-2xl bg-white shadow-2xl overflow-hidden">
             <div className="bg-gradient-to-r from-sky-600 to-sky-700 text-white px-6 py-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold">
@@ -512,7 +513,8 @@ export default function CategoriesPage() {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
