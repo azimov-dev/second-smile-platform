@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Plus, Edit2, Trash2, Shield, X } from "lucide-react";
+import toast from "react-hot-toast";
 import { apiClient } from "../../api/client.js";
 import { useAuth } from "../../features/auth/useAuth";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
@@ -36,9 +37,7 @@ export function Users() {
         setUsers(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("loadUsers error", err);
-        setError(
-          t("usersPage.loadError") || "Foydalanuvchilarni yuklashda xatolik.",
-        );
+        setError(err.message || "Foydalanuvchilarni yuklashda xatolik.");
       } finally {
         setLoading(false);
       }
@@ -117,6 +116,7 @@ export function Users() {
         setUsers((prev) =>
           prev.map((u) => (u.id === editingUser.id ? updated : u)),
         );
+        toast.success("Foydalanuvchi yangilandi");
       } else {
         const created = await apiClient("/admin/users", {
           method: "POST",
@@ -129,14 +129,15 @@ export function Users() {
           },
         });
         setUsers((prev) => [...prev, created]);
+        toast.success("Foydalanuvchi yaratildi");
       }
 
       closeModal();
     } catch (err) {
       console.error("save user error", err);
-      setError(
-        t("usersPage.saveError") || "Foydalanuvchini saqlashda xatolik.",
-      );
+      const msg = err.message || "Foydalanuvchini saqlashda xatolik.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -166,9 +167,9 @@ export function Users() {
       setUsers((prev) => prev.filter((u) => u.id !== user.id));
     } catch (err) {
       console.error("delete user error", err);
-      setError(
-        t("usersPage.deleteError") || "Foydalanuvchini o'chirishda xatolik.",
-      );
+      const msg = err.message || "Foydalanuvchini o'chirishda xatolik.";
+      setError(msg);
+      toast.error(msg);
     }
   };
 

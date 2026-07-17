@@ -2,6 +2,7 @@ import AppRouter from "./router/AppRouter.jsx";
 import { ClinicProvider, useClinic } from "./context/ClinicContext.jsx";
 import SubscriptionExpired from "./components/SubscriptionExpired.jsx";
 import ClinicNotFound from "./components/ClinicNotFound.jsx";
+import { Toaster } from "react-hot-toast";
 
 function AppContent() {
   const { loading, clinicNotFound, subscriptionExpired } = useClinic();
@@ -27,6 +28,7 @@ function AppContent() {
 export default function App() {
   return (
     <ClinicProvider>
+      <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
       <AppContent />
     </ClinicProvider>
   );
