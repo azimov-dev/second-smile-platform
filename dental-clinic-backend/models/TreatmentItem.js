@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       notes: { type: DataTypes.TEXT, allowNull: true },
     },
     {
-      tableName: "TreatmentItems",
+      tableName: "treatment_items",
       timestamps: true,
       scopes: {
         clinic(clinicId) {
