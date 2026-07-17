@@ -77,6 +77,9 @@ export function Treatments() {
 
   const [showServicesModal, setShowServicesModal] = useState(false);
   const [selectedTreatment, setSelectedTreatment] = useState(null);
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [planSummary, setPlanSummary] = useState(null);
+  const [loadingPlanSummary, setLoadingPlanSummary] = useState(false);
 
   const [completingId, setCompletingId] = useState(null);
   const [cancellingId, setCancellingId] = useState(null);
@@ -150,11 +153,16 @@ export function Treatments() {
                     : "",
         }));
 
+        const plan = t.appointment?.treatmentPlan || null;
+        const planLabel = plan?.title || (plan?.id ? `#${plan.id}` : "-");
+
         return {
           id: t.id,
           appointmentId: t.appointment?.id,
           date,
           patient: patientName,
+          plan: planLabel,
+          planId: plan?.id || null,
           doctor: doctorName,
           status: t.status || "active",
           total,
@@ -276,6 +284,27 @@ export function Treatments() {
   const openServicesModal = (treatment) => {
     setSelectedTreatment(treatment);
     setShowServicesModal(true);
+  };
+
+  const openPlanSummary = async (planId) => {
+    if (!planId || !token) return;
+    try {
+      setLoadingPlanSummary(true);
+      setShowPlanModal(true);
+      const summary = await apiClient(`/treatment-plans/${planId}/summary`, {
+        token,
+      });
+      setPlanSummary(summary);
+    } catch (err) {
+      alert(
+        err.message ||
+          t("errors.loadFailed") ||
+          "Reja ma'lumotlarini yuklashda xato",
+      );
+      setShowPlanModal(false);
+    } finally {
+      setLoadingPlanSummary(false);
+    }
   };
 
   const deleteServiceFromTreatment = async (service) => {
@@ -557,6 +586,9 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
                 <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                   {t("common.patient") || "BEMOR"}
                 </th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                  {t("treatment.plan") || "REJA"}
+                </th>
                 {isAdminOrReception && (
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                     {t("common.doctor") || "DOKTOR"}
@@ -588,7 +620,7 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
               {loading ? (
                 <tr>
                   <td
-                    colSpan={isAdminOrReception ? 9 : 8}
+                    colSpan={isAdminOrReception ? 10 : 9}
                     className="px-3 py-12 text-center"
                   >
                     <Loader2 className="w-8 h-8 animate-spin mx-auto text-gray-400" />
@@ -597,7 +629,7 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
               ) : paginatedTreatments.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={isAdminOrReception ? 9 : 8}
+                    colSpan={isAdminOrReception ? 10 : 9}
                     className="px-3 py-12 text-center text-gray-500"
                   >
                     {t("treatmentsPage.empty") || "Davolashlar topilmadi"}
@@ -614,6 +646,20 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
                       title={treatment.patient}
                     >
                       {treatment.patient}
+                    </td>
+                    <td className="px-3 py-3 text-sm text-gray-700 whitespace-nowrap truncate max-w-40">
+                      {treatment.planId ? (
+                        <button
+                          type="button"
+                          onClick={() => openPlanSummary(treatment.planId)}
+                          className="text-blue-600 hover:text-blue-800 font-medium"
+                          title={treatment.plan}
+                        >
+                          {treatment.plan}
+                        </button>
+                      ) : (
+                        <span title={treatment.plan}>{treatment.plan}</span>
+                      )}
                     </td>
                     {isAdminOrReception && (
                       <td
@@ -970,6 +1016,110 @@ ${new Date().toLocaleDateString("uz-UZ").padStart(24 + 5)}
                     : t("common.save") || "Saqlash"}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Treatment Plan Summary Modal */}
+      {showPlanModal && createPortal(
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999] p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-slate-900">
+                {planSummary?.plan?.title ||
+                  `${t("treatment.plan") || "Davolash rejasi"} #${planSummary?.plan?.id || ""}`}
+              </h2>
+              <button onClick={() => setShowPlanModal(false)}>
+                <X className="w-6 h-6 text-gray-500 hover:text-gray-700" />
+              </button>
+            </div>
+            <div className="p-6 space-y-6">
+              {loadingPlanSummary ? (
+                <div className="py-10 text-center text-gray-500">
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto" />
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-sm">
+                    <div className="rounded-xl border border-gray-200 p-4">
+                      <p className="text-gray-500">
+                        {t("common.total") || "Jami"}
+                      </p>
+                      <p className="text-lg font-semibold">
+                        {formatMoney(planSummary?.totals?.total || 0)} so'm
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 p-4">
+                      <p className="text-gray-500">
+                        {t("common.discount") || "Chegirma"}
+                      </p>
+                      <p className="text-lg font-semibold">
+                        {formatMoney(planSummary?.totals?.discount || 0)} so'm
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 p-4">
+                      <p className="text-gray-500">
+                        {t("common.paid") || "To'langan"}
+                      </p>
+                      <p className="text-lg font-semibold text-green-600">
+                        {formatMoney(planSummary?.totals?.paid || 0)} so'm
+                      </p>
+                    </div>
+                    <div className="rounded-xl border border-gray-200 p-4">
+                      <p className="text-gray-500">
+                        {t("common.debt") || "Qarzdorlik"}
+                      </p>
+                      <p className="text-lg font-semibold text-red-600">
+                        {formatMoney(planSummary?.totals?.debt || 0)} so'm
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">
+                      {t("appointments.title") || "Qabullar"}
+                    </h3>
+                    <div className="space-y-3">
+                      {(planSummary?.appointments || []).map((appt) => (
+                        <div
+                          key={appt.id}
+                          className="rounded-xl border border-gray-200 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+                        >
+                          <div>
+                            <p className="text-sm text-gray-500">
+                              {new Date(
+                                appt.appointment_date,
+                              ).toLocaleDateString("uz-UZ")}
+                            </p>
+                            <p className="text-sm font-medium text-gray-900">
+                              {appt.patient?.first_name}{" "}
+                              {appt.patient?.last_name}
+                            </p>
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {t("common.doctor") || "Doktor"}:{" "}
+                            {appt.doctor?.full_name || "-"}
+                          </div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {t("common.total") || "Jami"}:{" "}
+                            {formatMoney(appt.treatment?.total_amount || 0)}{" "}
+                            so'm
+                          </div>
+                        </div>
+                      ))}
+                      {(!planSummary?.appointments ||
+                        planSummary.appointments.length === 0) && (
+                        <p className="text-sm text-gray-500">
+                          {t("appointments.noAppointmentsForDay") ||
+                            "Qabullar yo'q"}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>,
