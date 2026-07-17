@@ -76,8 +76,9 @@ export default function SubscriptionPage() {
               subscription.status === "trial" ? "bg-blue-100 text-blue-700" :
               "bg-red-100 text-red-700"
             }`}>
-              {subscription.status === "active" ? "Faol" :
-               subscription.status === "trial" ? "Sinov" : "Muddati tugagan"}
+              {subscription.status === "active" ? t("subscription.statusActive") || "Faol" :
+               subscription.status === "trial" ? t("subscription.statusTrial") || "Sinov" :
+               t("subscription.statusExpired") || "Muddati tugagan"}
             </span>
           </div>
 
@@ -161,27 +162,27 @@ export default function SubscriptionPage() {
                 <ul className="mt-4 space-y-2 text-sm text-gray-600">
                   <li className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-green-500" />
-                    {p.max_doctors} shifokor
+                    {p.max_doctors} {t("subscription.doctorUnit") || "shifokor"}
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-green-500" />
-                    {p.max_patients} bemor
+                    {p.max_patients} {t("subscription.patientUnit") || "bemor"}
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-green-500" />
-                    {p.max_appointments_per_month} qabul/oy
+                    {p.max_appointments_per_month} {t("subscription.appointmentUnit") || "qabul/oy"}
                   </li>
                 </ul>
                 {p.id === plan?.id ? (
                   <div className="mt-4 rounded-xl bg-sky-100 py-2 text-center text-sm font-medium text-sky-700">
-                    Joriy tarif
+                    {t("subscription.currentPlanBadge") || "Joriy tarif"}
                   </div>
                 ) : (
                   <button
                     onClick={() => handlePay(p.id)}
                     className="mt-4 w-full rounded-xl bg-sky-600 py-2 text-sm font-medium text-white hover:bg-sky-700 transition"
                   >
-                    Tanlash
+                    {t("subscription.selectPlan") || "Tanlash"}
                   </button>
                 )}
               </div>
