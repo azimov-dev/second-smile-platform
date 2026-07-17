@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { apiClient } from "../../api/client.js";
 import { useAuth } from "../../features/auth/useAuth";
 import { useLanguage } from "../../i18n/LanguageContext.jsx";
+import { getErrorMessage } from "../../utils/errorMessage.js";
 
 const ROLES = ["admin", "doctor", "reception"];
 
@@ -135,7 +136,7 @@ export function Users() {
       closeModal();
     } catch (err) {
       console.error("save user error", err);
-      const msg = err.message || "Foydalanuvchini saqlashda xatolik.";
+      const msg = getErrorMessage(err, t);
       setError(msg);
       toast.error(msg);
     } finally {
@@ -167,7 +168,7 @@ export function Users() {
       setUsers((prev) => prev.filter((u) => u.id !== user.id));
     } catch (err) {
       console.error("delete user error", err);
-      const msg = err.message || "Foydalanuvchini o'chirishda xatolik.";
+      const msg = getErrorMessage(err, t);
       setError(msg);
       toast.error(msg);
     }
