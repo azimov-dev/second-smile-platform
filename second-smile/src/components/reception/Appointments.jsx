@@ -89,8 +89,9 @@ export function Appointments() {
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const getLocale = () => {
+    const localeMap = { uz: "uz-UZ", uz_cyr: "uz-Cyrl-UZ", uz_new: "uz-UZ", ru: "ru-RU", en: "en-US" };
     const lang = localStorage.getItem("lang") || "uz";
-    return `${lang}-${lang.toUpperCase()}`;
+    return localeMap[lang] || "uz-UZ";
   };
 
   // Format selected date for display

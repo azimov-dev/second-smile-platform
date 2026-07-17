@@ -43,8 +43,9 @@ export default function Topbar() {
     .toUpperCase();
 
   const languages = [
-    { code: "uz", label: "UZ", name: "O'zbekcha (yangi)" },
-    { code: "uz_cyr", label: "ЎЗ", name: "Ўзбекча (эски)" },
+    { code: "uz_new", label: "UZy", name: "O'zbekcha (yangi)" },
+    { code: "uz_cyr", label: "ЎЗ", name: "Ўзбекча" },
+    { code: "uz", label: "UZ", name: "O'zbekcha (eski)" },
     { code: "ru", label: "RU", name: "Русский" },
     { code: "en", label: "EN", name: "English" },
   ];

@@ -22,14 +22,16 @@ export function QueueModal() {
   const formatDisplayDate = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
+    const localeMap = { uz: "uz-UZ", uz_cyr: "uz-Cyrl-UZ", uz_new: "uz-UZ", ru: "ru-RU", en: "en-US" };
     const lang = localStorage.getItem("lang") || "uz";
+    const locale = localeMap[lang] || "uz-UZ";
     const options = {
       weekday: "long",
       day: "2-digit",
       month: "long",
       year: "numeric",
     };
-    return date.toLocaleDateString(`${lang}-${lang.toUpperCase()}`, options);
+    return date.toLocaleDateString(locale, options);
   };
 
   const todayFormatted = formatDisplayDate(selectedDate);

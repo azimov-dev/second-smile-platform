@@ -1,6 +1,14 @@
 import { createContext, useContext, useMemo, useState } from "react";
 import { translations } from "./translations";
 
+const LOCALE_MAP = {
+  uz: "uz-UZ",
+  uz_cyr: "uz-Cyrl-UZ",
+  uz_new: "uz-UZ",
+  ru: "ru-RU",
+  en: "en-US",
+};
+
 const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
@@ -28,7 +36,7 @@ export function LanguageProvider({ children }) {
         pack,
       );
 
-    // Fallback to uz if current lang doesn't have the key (e.g. uz_cyr missing keys)
+    // Fallback to uz (eski) if current lang doesn't have the key
     if (value === undefined && lang !== "uz") {
       value = key
         .split(".")
@@ -37,6 +45,7 @@ export function LanguageProvider({ children }) {
           translations.uz,
         );
     }
+    // If still undefined and we have uz_new or uz_cyr, already fell back to uz above
 
     let result = value !== undefined ? value : fallback || key;
 
@@ -52,9 +61,12 @@ export function LanguageProvider({ children }) {
     return result;
   };
 
+  const locale = LOCALE_MAP[lang] || "uz-UZ";
+
   const value = useMemo(
     () => ({
       lang,
+      locale,
       setLang: changeLang,
       t,
     }),
