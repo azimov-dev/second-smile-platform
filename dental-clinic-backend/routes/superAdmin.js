@@ -345,11 +345,11 @@ router.get("/stats/activity", async (req, res) => {
 
     const [activityTrend] = await sequelize.query(`
       SELECT
-        TO_CHAR("createdAt", 'YYYY-MM') as month,
+        TO_CHAR(created_at, 'YYYY-MM') as month,
         COUNT(*) as appointments
       FROM appointments
-      WHERE "createdAt" >= :sixMonthsAgo
-      GROUP BY TO_CHAR("createdAt", 'YYYY-MM')
+      WHERE created_at >= :sixMonthsAgo
+      GROUP BY TO_CHAR(created_at, 'YYYY-MM')
       ORDER BY month
     `, { replacements: { sixMonthsAgo } });
 
