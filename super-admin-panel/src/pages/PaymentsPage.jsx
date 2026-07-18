@@ -13,16 +13,25 @@ export default function PaymentsPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    Promise.all([
-      adminApi("/payments", { token }),
-      adminApi("/stats/revenue", { token }),
-    ])
-      .then(([paymentsData, statsData]) => {
+    const loadData = async () => {
+      try {
+        const paymentsData = await adminApi("/payments", { token });
         setPayments(paymentsData);
+      } catch (err) {
+        console.error("Payments load error:", err);
+      }
+
+      try {
+        const statsData = await adminApi("/stats/revenue", { token });
         setRevenueStats(statsData);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+      } catch (err) {
+        console.error("Revenue stats not available:", err);
+      }
+
+      setLoading(false);
+    };
+
+    loadData();
   }, [token]);
 
   // Filter payments

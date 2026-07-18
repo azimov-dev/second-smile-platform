@@ -20,16 +20,25 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      adminApi("/dashboard", { token }),
-      adminApi("/stats/overview", { token }),
-    ])
-      .then(([dashData, overviewData]) => {
+    const loadData = async () => {
+      try {
+        const dashData = await adminApi("/dashboard", { token });
         setStats(dashData);
+      } catch (err) {
+        console.error("Dashboard load error:", err);
+      }
+
+      try {
+        const overviewData = await adminApi("/stats/overview", { token });
         setOverview(overviewData);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+      } catch (err) {
+        console.error("Stats overview not available:", err);
+      }
+
+      setLoading(false);
+    };
+
+    loadData();
   }, [token]);
 
   if (loading) {

@@ -13,20 +13,25 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      adminApi("/stats/overview", { token }),
-      adminApi("/stats/revenue", { token }),
-      adminApi("/stats/subscriptions", { token }),
-      adminApi("/stats/activity", { token }),
-    ])
-      .then(([overviewData, revenueData, subsData, activityData]) => {
+    const loadData = async () => {
+      try {
+        const [overviewData, revenueData, subsData, activityData] = await Promise.all([
+          adminApi("/stats/overview", { token }).catch(() => null),
+          adminApi("/stats/revenue", { token }).catch(() => null),
+          adminApi("/stats/subscriptions", { token }).catch(() => null),
+          adminApi("/stats/activity", { token }).catch(() => null),
+        ]);
         setOverview(overviewData);
         setRevenue(revenueData);
         setSubscriptions(subsData);
         setActivity(activityData);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+      } catch (err) {
+        console.error("Analytics load error:", err);
+      }
+      setLoading(false);
+    };
+
+    loadData();
   }, [token]);
 
   const exportToCSV = (data, filename) => {
