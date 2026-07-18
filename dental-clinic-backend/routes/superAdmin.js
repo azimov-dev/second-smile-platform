@@ -422,7 +422,7 @@ router.get("/clinics/:id", async (req, res) => {
 
 router.post("/clinics", async (req, res) => {
   try {
-    const { name, slug, owner_phone, address, plan_id, admin_full_name, admin_phone, admin_password } = req.body;
+    const { name, slug, owner_phone, address, plan_id, subscription_status, trial_days, admin_full_name, admin_phone, admin_password } = req.body;
 
     if (!name || !slug) return res.status(400).json({ message: "name and slug required" });
     if (!admin_phone || !admin_password) return res.status(400).json({ message: "admin_phone and admin_password required" });
@@ -446,12 +446,15 @@ router.post("/clinics", async (req, res) => {
     if (plan_id) {
       const plan = await Plan.findByPk(plan_id);
       if (plan) {
+        const status = subscription_status || "trial";
+        const days = trial_days || (status === "trial" ? (plan.trial_days || 14) : 30);
         await Subscription.create({
           clinic_id: clinic.id,
           plan_id: plan.id,
-          status: "active",
+          status: status,
           current_period_start: new Date(),
-          current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          current_period_end: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
+          trial_ends_at: status === "trial" ? new Date(Date.now() + days * 24 * 60 * 60 * 1000) : null,
         });
       }
     }

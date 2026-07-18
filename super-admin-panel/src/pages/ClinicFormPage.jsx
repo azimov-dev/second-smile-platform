@@ -24,6 +24,8 @@ export default function ClinicFormPage() {
   });
   const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState("");
+  const [subscriptionStatus, setSubscriptionStatus] = useState("trial");
+  const [trialDays, setTrialDays] = useState("14");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -68,7 +70,11 @@ export default function ClinicFormPage() {
         await adminApi(`/clinics/${id}`, { method: "PUT", token, body: form });
       } else {
         const body = { ...form, ...adminForm };
-        if (selectedPlan) body.plan_id = Number(selectedPlan);
+        if (selectedPlan) {
+          body.plan_id = Number(selectedPlan);
+          body.subscription_status = subscriptionStatus;
+          body.trial_days = Number(trialDays);
+        }
         await adminApi("/clinics", { method: "POST", token, body });
       }
       navigate("/clinics");
@@ -122,6 +128,35 @@ export default function ClinicFormPage() {
                 ))}
               </select>
             </div>
+            {selectedPlan && (
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    value={subscriptionStatus}
+                    onChange={(e) => setSubscriptionStatus(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  >
+                    <option value="trial">Trial (free period)</option>
+                    <option value="active">Active (paid)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Duration (days)</label>
+                  <select
+                    value={trialDays}
+                    onChange={(e) => setTrialDays(e.target.value)}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                  >
+                    <option value="7">7 days</option>
+                    <option value="14">14 days</option>
+                    <option value="30">30 days</option>
+                    <option value="90">90 days</option>
+                    <option value="365">365 days (1 year)</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </>
         )}
 
