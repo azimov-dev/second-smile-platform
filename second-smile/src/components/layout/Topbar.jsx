@@ -44,8 +44,8 @@ export default function Topbar() {
 
   const languages = [
     { code: "uz_new", label: "UZ'", name: "O'zbekcha (yangi)" },
-    { code: "uz_cyr", label: "ЎЗ", name: "Ўзбекча" },
     { code: "uz", label: "UZ", name: "O'zbekcha (eski)" },
+    { code: "uz_cyr", label: "ЎЗ", name: "Ўзбекча" },
     { code: "ru", label: "RU", name: "Русский" },
     { code: "en", label: "EN", name: "English" },
   ];
