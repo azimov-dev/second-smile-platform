@@ -76,7 +76,8 @@ router.get("/dashboard", async (req, res) => {
 // Enhanced overview stats for dashboard
 router.get("/stats/overview", async (req, res) => {
   try {
-    const { sequelize, Op } = require("../models");
+    const { sequelize, Sequelize } = require("../models");
+    const { Op } = Sequelize;
     const { Treatment } = require("../models");
 
     // Basic counts
@@ -250,7 +251,8 @@ router.get("/stats/revenue", async (req, res) => {
 // Subscription health
 router.get("/stats/subscriptions", async (req, res) => {
   try {
-    const { sequelize, Op } = require("../models");
+    const { sequelize, Sequelize } = require("../models");
+    const { Op } = Sequelize;
 
     // Status breakdown
     const [statusBreakdown] = await sequelize.query(`
