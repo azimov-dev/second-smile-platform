@@ -8,6 +8,7 @@ import PlansPage from "./pages/PlansPage.jsx";
 import PaymentsPage from "./pages/PaymentsPage.jsx";
 import UsersPage from "./pages/UsersPage.jsx";
 import SubscriptionsPage from "./pages/SubscriptionsPage.jsx";
+import AnalyticsPage from "./pages/AnalyticsPage.jsx";
 import Layout from "./components/Layout.jsx";
 
 function ProtectedRoute({ children }) {
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="users" element={<UsersPage />} />
         <Route path="subscriptions" element={<SubscriptionsPage />} />
         <Route path="payments" element={<PaymentsPage />} />
+        <Route path="analytics" element={<AnalyticsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

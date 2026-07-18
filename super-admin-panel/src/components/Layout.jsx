@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { LayoutDashboard, Building2, CreditCard, Package, Users, LogOut, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Building2, CreditCard, Package, Users, LogOut, ShieldCheck, BarChart3 } from "lucide-react";
 
 export default function Layout() {
   const { admin, logout } = useAuth();
@@ -39,6 +39,9 @@ export default function Layout() {
           </SideLink>
           <SideLink to="/payments" icon={<CreditCard className="h-5 w-5" />}>
             Payments
+          </SideLink>
+          <SideLink to="/analytics" icon={<BarChart3 className="h-5 w-5" />}>
+            Analytics
           </SideLink>
         </nav>
 

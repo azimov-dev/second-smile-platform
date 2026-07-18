@@ -71,6 +71,317 @@ router.get("/dashboard", async (req, res) => {
   }
 });
 
+// ===== STATISTICS =====
+
+// Enhanced overview stats for dashboard
+router.get("/stats/overview", async (req, res) => {
+  try {
+    const { sequelize, Op } = require("../models");
+    const { Treatment } = require("../models");
+
+    // Basic counts
+    const total_clinics = await Clinic.count();
+    const active_clinics = await Clinic.count({ where: { is_active: true } });
+    const total_users = await User.count();
+    const total_patients = await Patient.count();
+    const total_appointments = await Appointment.count();
+
+    // MRR
+    const [mrrResult] = await sequelize.query(`
+      SELECT COALESCE(SUM(p.price_monthly), 0) as mrr
+      FROM subscriptions s
+      JOIN plans p ON s.plan_id = p.id
+      WHERE s.status = 'active'
+    `);
+    const mrr = Number(mrrResult[0]?.mrr) || 0;
+
+    // Clinics growth (last 6 months)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const [clinicsGrowth] = await sequelize.query(`
+      SELECT
+        TO_CHAR(created_at, 'YYYY-MM') as month,
+        COUNT(*) as count
+      FROM clinics
+      WHERE created_at >= :sixMonthsAgo
+      GROUP BY TO_CHAR(created_at, 'YYYY-MM')
+      ORDER BY month
+    `, { replacements: { sixMonthsAgo } });
+
+    // Revenue trend (last 6 months)
+    const [revenueTrend] = await sequelize.query(`
+      SELECT
+        TO_CHAR(paid_at, 'YYYY-MM') as month,
+        COALESCE(SUM(amount), 0) as revenue
+      FROM subscription_payments
+      WHERE status = 'completed' AND paid_at >= :sixMonthsAgo
+      GROUP BY TO_CHAR(paid_at, 'YYYY-MM')
+      ORDER BY month
+    `, { replacements: { sixMonthsAgo } });
+
+    // Subscription status distribution
+    const [subStatusDist] = await sequelize.query(`
+      SELECT status, COUNT(*) as count
+      FROM subscriptions
+      GROUP BY status
+    `);
+
+    // Top 5 clinics by appointments
+    const [topClinics] = await sequelize.query(`
+      SELECT c.id, c.name, COUNT(a.id) as appointments_count
+      FROM clinics c
+      LEFT JOIN appointments a ON c.id = a.clinic_id
+      GROUP BY c.id, c.name
+      ORDER BY appointments_count DESC
+      LIMIT 5
+    `);
+
+    // Expiring soon (within 7 days)
+    const sevenDaysLater = new Date();
+    sevenDaysLater.setDate(sevenDaysLater.getDate() + 7);
+
+    const expiringSoon = await Subscription.findAll({
+      where: {
+        status: { [Op.in]: ['active', 'trial'] },
+        current_period_end: { [Op.between]: [new Date(), sevenDaysLater] }
+      },
+      include: [
+        { model: Clinic, as: "clinic", attributes: ["id", "name"] },
+        { model: Plan, as: "plan", attributes: ["name"] }
+      ],
+      order: [["current_period_end", "ASC"]],
+      limit: 10
+    });
+
+    res.json({
+      total_clinics,
+      active_clinics,
+      total_users,
+      total_patients,
+      total_appointments,
+      mrr,
+      clinics_growth: clinicsGrowth,
+      revenue_trend: revenueTrend,
+      subscription_status: subStatusDist,
+      top_clinics: topClinics,
+      expiring_soon: expiringSoon.map(s => ({
+        id: s.id,
+        clinic_name: s.clinic?.name,
+        clinic_id: s.clinic_id,
+        plan_name: s.plan?.name,
+        expires_at: s.current_period_end,
+        days_left: Math.ceil((new Date(s.current_period_end) - new Date()) / (1000 * 60 * 60 * 24))
+      }))
+    });
+  } catch (err) {
+    console.error("stats/overview error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+// Revenue analytics
+router.get("/stats/revenue", async (req, res) => {
+  try {
+    const { sequelize } = require("../models");
+    const months = parseInt(req.query.months) || 12;
+
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - months);
+
+    // Monthly revenue
+    const [monthlyRevenue] = await sequelize.query(`
+      SELECT
+        TO_CHAR(paid_at, 'YYYY-MM') as month,
+        COALESCE(SUM(amount), 0) as revenue,
+        COUNT(*) as payment_count
+      FROM subscription_payments
+      WHERE status = 'completed' AND paid_at >= :startDate
+      GROUP BY TO_CHAR(paid_at, 'YYYY-MM')
+      ORDER BY month
+    `, { replacements: { startDate } });
+
+    // Revenue by plan
+    const [revenueByPlan] = await sequelize.query(`
+      SELECT
+        p.name as plan_name,
+        COALESCE(SUM(sp.amount), 0) as total_revenue
+      FROM subscription_payments sp
+      JOIN subscriptions s ON sp.subscription_id = s.id
+      JOIN plans p ON s.plan_id = p.id
+      WHERE sp.status = 'completed'
+      GROUP BY p.name
+      ORDER BY total_revenue DESC
+    `);
+
+    // Payment success rate
+    const [paymentStats] = await sequelize.query(`
+      SELECT
+        status,
+        COUNT(*) as count
+      FROM subscription_payments
+      GROUP BY status
+    `);
+
+    const totalPayments = paymentStats.reduce((sum, p) => sum + parseInt(p.count), 0);
+    const completedPayments = paymentStats.find(p => p.status === 'completed')?.count || 0;
+    const successRate = totalPayments > 0 ? ((completedPayments / totalPayments) * 100).toFixed(1) : 0;
+
+    // Total revenue all time
+    const [totalResult] = await sequelize.query(`
+      SELECT COALESCE(SUM(amount), 0) as total
+      FROM subscription_payments
+      WHERE status = 'completed'
+    `);
+
+    res.json({
+      monthly_revenue: monthlyRevenue,
+      revenue_by_plan: revenueByPlan,
+      payment_stats: paymentStats,
+      success_rate: parseFloat(successRate),
+      total_revenue: Number(totalResult[0]?.total) || 0
+    });
+  } catch (err) {
+    console.error("stats/revenue error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+// Subscription health
+router.get("/stats/subscriptions", async (req, res) => {
+  try {
+    const { sequelize, Op } = require("../models");
+
+    // Status breakdown
+    const [statusBreakdown] = await sequelize.query(`
+      SELECT status, COUNT(*) as count
+      FROM subscriptions
+      GROUP BY status
+    `);
+
+    // Expiring within 7 days
+    const sevenDays = new Date();
+    sevenDays.setDate(sevenDays.getDate() + 7);
+
+    const expiringIn7Days = await Subscription.count({
+      where: {
+        status: { [Op.in]: ['active', 'trial'] },
+        current_period_end: { [Op.between]: [new Date(), sevenDays] }
+      }
+    });
+
+    // Expiring within 30 days
+    const thirtyDays = new Date();
+    thirtyDays.setDate(thirtyDays.getDate() + 30);
+
+    const expiringIn30Days = await Subscription.count({
+      where: {
+        status: { [Op.in]: ['active', 'trial'] },
+        current_period_end: { [Op.between]: [new Date(), thirtyDays] }
+      }
+    });
+
+    // Churn rate (cancellations per month, last 6 months)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const [churnData] = await sequelize.query(`
+      SELECT
+        TO_CHAR(cancelled_at, 'YYYY-MM') as month,
+        COUNT(*) as cancellations
+      FROM subscriptions
+      WHERE cancelled_at >= :sixMonthsAgo
+      GROUP BY TO_CHAR(cancelled_at, 'YYYY-MM')
+      ORDER BY month
+    `, { replacements: { sixMonthsAgo } });
+
+    // Plan popularity
+    const [planPopularity] = await sequelize.query(`
+      SELECT
+        p.name,
+        COUNT(s.id) as subscriber_count
+      FROM plans p
+      LEFT JOIN subscriptions s ON p.id = s.plan_id AND s.status IN ('active', 'trial')
+      GROUP BY p.id, p.name
+      ORDER BY subscriber_count DESC
+    `);
+
+    res.json({
+      status_breakdown: statusBreakdown,
+      expiring_in_7_days: expiringIn7Days,
+      expiring_in_30_days: expiringIn30Days,
+      churn_data: churnData,
+      plan_popularity: planPopularity
+    });
+  } catch (err) {
+    console.error("stats/subscriptions error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
+// Platform activity
+router.get("/stats/activity", async (req, res) => {
+  try {
+    const { sequelize } = require("../models");
+    const { Treatment } = require("../models");
+
+    // Total counts
+    const total_patients = await Patient.count();
+    const total_appointments = await Appointment.count();
+    const total_treatments = await Treatment.count();
+
+    // Appointments by status
+    const [appointmentsByStatus] = await sequelize.query(`
+      SELECT status, COUNT(*) as count
+      FROM appointments
+      GROUP BY status
+    `);
+
+    // Activity trend (last 6 months)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const [activityTrend] = await sequelize.query(`
+      SELECT
+        TO_CHAR("createdAt", 'YYYY-MM') as month,
+        COUNT(*) as appointments
+      FROM appointments
+      WHERE "createdAt" >= :sixMonthsAgo
+      GROUP BY TO_CHAR("createdAt", 'YYYY-MM')
+      ORDER BY month
+    `, { replacements: { sixMonthsAgo } });
+
+    // Most active clinics
+    const [mostActiveClinics] = await sequelize.query(`
+      SELECT
+        c.id,
+        c.name,
+        COUNT(DISTINCT p.id) as patients,
+        COUNT(DISTINCT a.id) as appointments,
+        COUNT(DISTINCT t.id) as treatments
+      FROM clinics c
+      LEFT JOIN patients p ON c.id = p.clinic_id
+      LEFT JOIN appointments a ON c.id = a.clinic_id
+      LEFT JOIN treatments t ON c.id = t.clinic_id
+      GROUP BY c.id, c.name
+      ORDER BY appointments DESC
+      LIMIT 10
+    `);
+
+    res.json({
+      total_patients,
+      total_appointments,
+      total_treatments,
+      appointments_by_status: appointmentsByStatus,
+      activity_trend: activityTrend,
+      most_active_clinics: mostActiveClinics
+    });
+  } catch (err) {
+    console.error("stats/activity error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 // ===== CLINICS =====
 router.get("/clinics", async (req, res) => {
   try {
