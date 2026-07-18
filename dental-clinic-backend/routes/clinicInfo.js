@@ -74,7 +74,7 @@ router.post("/pay", auth, async (req, res) => {
     subscription = await db.Subscription.create({
       clinic_id: req.clinicId,
       plan_id: plan.id,
-      status: "pending",
+      status: "trial",
       current_period_start: new Date(),
       current_period_end: new Date(),
     });
