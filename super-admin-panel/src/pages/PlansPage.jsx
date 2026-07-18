@@ -11,7 +11,7 @@ export default function PlansPage() {
   const [form, setForm] = useState(emptyForm());
 
   function emptyForm() {
-    return { name: "", slug: "", price_monthly: "", price_yearly: "", max_doctors: "", max_patients: "", max_appointments_per_month: "", is_active: true };
+    return { name: "", slug: "", price_monthly: "", price_yearly: "", max_doctors: "", max_patients: "", max_appointments_per_month: "", trial_days: "14", is_active: true };
   }
 
   useEffect(() => { loadPlans(); }, []);
@@ -34,6 +34,7 @@ export default function PlansPage() {
       max_doctors: String(plan.max_doctors),
       max_patients: String(plan.max_patients),
       max_appointments_per_month: String(plan.max_appointments_per_month),
+      trial_days: String(plan.trial_days || 14),
       is_active: plan.is_active,
     });
   }
@@ -52,6 +53,7 @@ export default function PlansPage() {
       max_doctors: Number(form.max_doctors),
       max_patients: Number(form.max_patients),
       max_appointments_per_month: Number(form.max_appointments_per_month),
+      trial_days: Number(form.trial_days) || 14,
     };
 
     try {
@@ -89,6 +91,7 @@ export default function PlansPage() {
             <input name="max_doctors" placeholder="Max Doctors" type="number" value={form.max_doctors} onChange={(e) => setForm({ ...form, max_doctors: e.target.value })} className="rounded-lg border px-3 py-2 text-sm" required />
             <input name="max_patients" placeholder="Max Patients" type="number" value={form.max_patients} onChange={(e) => setForm({ ...form, max_patients: e.target.value })} className="rounded-lg border px-3 py-2 text-sm" required />
             <input name="max_appointments_per_month" placeholder="Max Appointments/Month" type="number" value={form.max_appointments_per_month} onChange={(e) => setForm({ ...form, max_appointments_per_month: e.target.value })} className="rounded-lg border px-3 py-2 text-sm" required />
+            <input name="trial_days" placeholder="Trial Days" type="number" value={form.trial_days} onChange={(e) => setForm({ ...form, trial_days: e.target.value })} className="rounded-lg border px-3 py-2 text-sm" />
           </div>
           <div className="flex gap-3">
             <button type="submit" className="rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white hover:bg-sky-700 transition">Save</button>
@@ -106,6 +109,7 @@ export default function PlansPage() {
               <th className="px-4 py-3 font-medium">Doctors</th>
               <th className="px-4 py-3 font-medium">Patients</th>
               <th className="px-4 py-3 font-medium">Appts/mo</th>
+              <th className="px-4 py-3 font-medium">Trial</th>
               <th className="px-4 py-3 font-medium">Actions</th>
             </tr>
           </thead>
@@ -117,6 +121,7 @@ export default function PlansPage() {
                 <td className="px-4 py-3">{p.max_doctors}</td>
                 <td className="px-4 py-3">{p.max_patients}</td>
                 <td className="px-4 py-3">{p.max_appointments_per_month}</td>
+                <td className="px-4 py-3">{p.trial_days || 14} days</td>
                 <td className="px-4 py-3">
                   <button onClick={() => startEdit(p)} className="rounded p-1 hover:bg-gray-100">
                     <Pencil className="h-4 w-4 text-gray-600" />

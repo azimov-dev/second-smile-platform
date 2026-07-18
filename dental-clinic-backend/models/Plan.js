@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       max_doctors: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 2 },
       max_patients: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 500 },
       max_appointments_per_month: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 200 },
+      trial_days: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 14 },
       features: { type: DataTypes.JSONB, allowNull: true },
       is_active: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: true },
     },

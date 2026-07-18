@@ -500,7 +500,7 @@ router.get("/clinics/:id/stats", async (req, res) => {
 // ===== CLINIC SUBSCRIPTION MANAGEMENT =====
 router.post("/clinics/:id/subscription", async (req, res) => {
   try {
-    const { plan_id, duration_days } = req.body;
+    const { plan_id, duration_days, status } = req.body;
     const clinicId = req.params.id;
 
     if (!plan_id) return res.status(400).json({ message: "plan_id required" });
@@ -517,14 +517,16 @@ router.post("/clinics/:id/subscription", async (req, res) => {
       { where: { clinic_id: clinicId, status: ["active", "trial"] } },
     );
 
-    // Create new active subscription
-    const days = duration_days || 30;
+    // Create new subscription (trial or active based on status param)
+    const days = duration_days || (status === "trial" ? (plan.trial_days || 14) : 30);
+    const subStatus = status === "trial" ? "trial" : "active";
     const sub = await Subscription.create({
       clinic_id: clinicId,
       plan_id: plan.id,
-      status: "active",
+      status: subStatus,
       current_period_start: new Date(),
       current_period_end: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
+      trial_ends_at: subStatus === "trial" ? new Date(Date.now() + days * 24 * 60 * 60 * 1000) : null,
     });
 
     res.status(201).json(sub);

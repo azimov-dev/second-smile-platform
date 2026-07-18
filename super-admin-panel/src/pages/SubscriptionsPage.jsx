@@ -12,6 +12,7 @@ export default function SubscriptionsPage() {
   const [showAssign, setShowAssign] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState("");
   const [duration, setDuration] = useState("30");
+  const [subscriptionStatus, setSubscriptionStatus] = useState("trial");
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
 
@@ -41,11 +42,12 @@ export default function SubscriptionsPage() {
       await adminApi(`/clinics/${clinicId}/subscription`, {
         method: "POST",
         token,
-        body: { plan_id: Number(selectedPlan), duration_days: Number(duration) },
+        body: { plan_id: Number(selectedPlan), duration_days: Number(duration), status: subscriptionStatus },
       });
       setShowAssign(null);
       setSelectedPlan("");
       setDuration("30");
+      setSubscriptionStatus("trial");
       loadData();
     } catch (err) {
       alert(err.message);
@@ -297,10 +299,19 @@ export default function SubscriptionsPage() {
                           onChange={(e) => setDuration(e.target.value)}
                           className="w-full rounded border px-2 py-1.5 text-sm"
                         >
+                          <option value="14">14 days (trial)</option>
                           <option value="30">30 days</option>
                           <option value="90">90 days</option>
                           <option value="180">180 days</option>
                           <option value="365">365 days (1 year)</option>
+                        </select>
+                        <select
+                          value={subscriptionStatus}
+                          onChange={(e) => setSubscriptionStatus(e.target.value)}
+                          className="w-full rounded border px-2 py-1.5 text-sm"
+                        >
+                          <option value="trial">Trial (free period)</option>
+                          <option value="active">Active (paid)</option>
                         </select>
                         <button
                           onClick={() => handleAssign(c.id)}
