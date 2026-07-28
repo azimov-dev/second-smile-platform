@@ -28,6 +28,8 @@ import {
   Mail,
   MapPin,
   CalendarClock,
+  AlertTriangle,
+  Clock,
 } from "lucide-react";
 
 export default function DashboardLayout() {
@@ -322,6 +324,10 @@ export default function DashboardLayout() {
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col md:ml-0">
         <Topbar />
+
+        {/* Subscription Warning Banner */}
+        <SubscriptionWarning clinic={clinic} t={t} role={role} />
+
         <main className="flex-1 overflow-y-auto bg-gray-50 px-2 py-3 md:px-4 md:py-5">
           <div className="mx-auto max-w-7xl">
             <Outlet />
@@ -400,6 +406,63 @@ function SectionLabel({ children }) {
   return (
     <div className="mb-2 mt-6 px-4 text-xs font-bold uppercase tracking-wider text-slate-500">
       {children}
+    </div>
+  );
+}
+
+function SubscriptionWarning({ clinic, t, role }) {
+  const sub = clinic?.subscription;
+  if (!sub) return null;
+
+  const daysLeft = sub.days_left;
+  const isTrial = sub.is_trial;
+  const isExpiring = daysLeft !== null && daysLeft <= 7;
+  const isWarning = daysLeft !== null && daysLeft <= 14 && daysLeft > 7;
+
+  if (!isTrial && !isExpiring && !isWarning) return null;
+
+  let bgColor = "bg-blue-50 border-blue-200";
+  let textColor = "text-blue-800";
+  let iconColor = "text-blue-600";
+  let Icon = Clock;
+
+  if (isExpiring) {
+    bgColor = "bg-red-50 border-red-200";
+    textColor = "text-red-800";
+    iconColor = "text-red-600";
+    Icon = AlertTriangle;
+  } else if (isWarning) {
+    bgColor = "bg-yellow-50 border-yellow-200";
+    textColor = "text-yellow-800";
+    iconColor = "text-yellow-600";
+    Icon = AlertTriangle;
+  }
+
+  let message = "";
+  if (isTrial) {
+    message = t("subscription.trialWarning") || `Sinov muddati: ${daysLeft} kun qoldi`;
+  } else if (isExpiring) {
+    message = t("subscription.expiringWarning") || `Obuna muddati tugayapti: ${daysLeft} kun qoldi!`;
+  } else if (isWarning) {
+    message = t("subscription.warningDays") || `Obuna muddati: ${daysLeft} kun qoldi`;
+  }
+
+  return (
+    <div className={`mx-2 mt-2 md:mx-4 rounded-lg border ${bgColor} px-4 py-3 flex items-center justify-between`}>
+      <div className="flex items-center gap-3">
+        <Icon className={`h-5 w-5 ${iconColor}`} />
+        <span className={`text-sm font-medium ${textColor}`}>
+          {message.replace("${daysLeft}", daysLeft)}
+        </span>
+      </div>
+      {role === "admin" && (
+        <a
+          href="/admin/subscription"
+          className={`text-sm font-medium underline ${textColor} hover:opacity-80`}
+        >
+          {t("subscription.renew") || "Obunani yangilash"}
+        </a>
+      )}
     </div>
   );
 }

@@ -4,7 +4,31 @@ const auth = require("../middleware/authMiddleware");
 const { buildCheckoutUrl } = require("../utils/clickHelper");
 
 router.get("/info", async (req, res) => {
+  const db = require("../models");
   const clinic = req.clinic;
+
+  // Get subscription info
+  const subscription = await db.Subscription.findOne({
+    where: { clinic_id: clinic.id },
+    include: [{ model: db.Plan, as: "plan" }],
+    order: [["created_at", "DESC"]],
+  });
+
+  let subscriptionInfo = null;
+  if (subscription) {
+    const daysLeft = subscription.current_period_end
+      ? Math.ceil((new Date(subscription.current_period_end) - new Date()) / (1000 * 60 * 60 * 24))
+      : null;
+
+    subscriptionInfo = {
+      status: subscription.status,
+      plan_name: subscription.plan?.name,
+      current_period_end: subscription.current_period_end,
+      days_left: daysLeft,
+      is_trial: subscription.status === "trial",
+    };
+  }
+
   res.json({
     id: clinic.id,
     name: clinic.name,
@@ -12,6 +36,7 @@ router.get("/info", async (req, res) => {
     logo_url: clinic.logo_url,
     address: clinic.address,
     settings: clinic.settings,
+    subscription: subscriptionInfo,
   });
 });
 
