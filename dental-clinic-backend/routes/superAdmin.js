@@ -552,13 +552,22 @@ router.post("/clinics/:id/subscription", async (req, res) => {
 
 router.delete("/clinics/:id/subscription", async (req, res) => {
   try {
+    const { Sequelize } = require("../models");
+    const { Op } = Sequelize;
     const clinicId = req.params.id;
-    await Subscription.update(
+
+    const [updatedCount] = await Subscription.update(
       { status: "cancelled", cancelled_at: new Date() },
-      { where: { clinic_id: clinicId, status: ["active", "trial"] } },
+      { where: { clinic_id: clinicId, status: { [Op.in]: ["active", "trial"] } } },
     );
-    res.json({ message: "Subscription cancelled" });
+
+    if (updatedCount === 0) {
+      return res.status(404).json({ message: "No active subscription found" });
+    }
+
+    res.json({ message: "Subscription cancelled", updated: updatedCount });
   } catch (err) {
+    console.error("DELETE subscription error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
