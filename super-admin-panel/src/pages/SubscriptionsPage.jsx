@@ -15,6 +15,7 @@ export default function SubscriptionsPage() {
   const [subscriptionStatus, setSubscriptionStatus] = useState("trial");
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [confirmCancel, setConfirmCancel] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -57,7 +58,6 @@ export default function SubscriptionsPage() {
   }
 
   async function handleCancel(clinicId) {
-    if (!confirm("Cancel this clinic's subscription?")) return;
     setActionLoading(clinicId);
     try {
       await adminApi(`/clinics/${clinicId}/subscription`, {
@@ -69,6 +69,7 @@ export default function SubscriptionsPage() {
       alert(err.message);
     } finally {
       setActionLoading(null);
+      setConfirmCancel(null);
     }
   }
 
@@ -343,7 +344,7 @@ export default function SubscriptionsPage() {
                         </button>
                         {c.subscription && c.subscription.status !== "cancelled" && (
                           <button
-                            onClick={() => handleCancel(c.id)}
+                            onClick={() => setConfirmCancel(c)}
                             disabled={actionLoading === c.id}
                             title="Cancel subscription"
                             className="rounded-lg border border-red-200 p-1.5 text-red-600 hover:bg-red-50"
@@ -363,6 +364,37 @@ export default function SubscriptionsPage() {
           <p className="text-center py-8 text-gray-500">No clinics found</p>
         )}
       </div>
+
+      {/* Cancel Confirmation Modal */}
+      {confirmCancel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="mx-4 w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+              <Ban className="h-6 w-6 text-red-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">Cancel Subscription</h3>
+            <p className="mt-2 text-sm text-gray-600">
+              Are you sure you want to cancel the subscription for <strong>{confirmCancel.name}</strong>?
+              This will revoke their access to the system.
+            </p>
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setConfirmCancel(null)}
+                className="flex-1 rounded-lg border px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                No, Keep It
+              </button>
+              <button
+                onClick={() => handleCancel(confirmCancel.id)}
+                disabled={actionLoading === confirmCancel.id}
+                className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:bg-red-300"
+              >
+                {actionLoading === confirmCancel.id ? "Cancelling..." : "Yes, Cancel"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
