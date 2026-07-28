@@ -388,13 +388,22 @@ router.get("/stats/activity", async (req, res) => {
 router.get("/clinics", async (req, res) => {
   try {
     const clinics = await Clinic.findAll({
-      include: [{ model: Subscription, as: "subscriptions", include: [{ model: Plan, as: "plan" }] }],
+      include: [{
+        model: Subscription,
+        as: "subscriptions",
+        include: [{ model: Plan, as: "plan" }],
+        order: [["created_at", "DESC"]],
+      }],
       order: [["id", "DESC"]],
     });
     const result = clinics.map((c) => {
       const plain = c.toJSON();
-      const activeSub = plain.subscriptions?.find((s) => s.status === "active" || s.status === "trial");
-      plain.subscription = activeSub || plain.subscriptions?.[0] || null;
+      // Sort subscriptions by created_at DESC to get most recent first
+      const sortedSubs = (plain.subscriptions || []).sort((a, b) =>
+        new Date(b.created_at) - new Date(a.created_at)
+      );
+      // Get the most recent subscription (regardless of status)
+      plain.subscription = sortedSubs[0] || null;
       delete plain.subscriptions;
       return plain;
     });
@@ -411,8 +420,11 @@ router.get("/clinics/:id", async (req, res) => {
     });
     if (!clinic) return res.status(404).json({ message: "Clinic not found" });
     const plain = clinic.toJSON();
-    const activeSub = plain.subscriptions?.find((s) => s.status === "active" || s.status === "trial");
-    plain.subscription = activeSub || plain.subscriptions?.[0] || null;
+    // Sort subscriptions by created_at DESC to get most recent first
+    const sortedSubs = (plain.subscriptions || []).sort((a, b) =>
+      new Date(b.created_at) - new Date(a.created_at)
+    );
+    plain.subscription = sortedSubs[0] || null;
     delete plain.subscriptions;
     res.json(plain);
   } catch (err) {

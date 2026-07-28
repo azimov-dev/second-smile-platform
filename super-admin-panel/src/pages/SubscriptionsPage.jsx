@@ -178,6 +178,8 @@ export default function SubscriptionsPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
+            id="search-clinic"
+            name="search"
             type="text"
             placeholder="Search clinic..."
             value={search}
@@ -186,6 +188,8 @@ export default function SubscriptionsPage() {
           />
         </div>
         <select
+          id="status-filter"
+          name="statusFilter"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-sky-500"
@@ -283,6 +287,8 @@ export default function SubscriptionsPage() {
                           </button>
                         </div>
                         <select
+                          id="plan-select"
+                          name="plan"
                           value={selectedPlan}
                           onChange={(e) => setSelectedPlan(e.target.value)}
                           className="w-full rounded border px-2 py-1.5 text-sm"
@@ -295,6 +301,8 @@ export default function SubscriptionsPage() {
                           ))}
                         </select>
                         <select
+                          id="duration-select"
+                          name="duration"
                           value={duration}
                           onChange={(e) => setDuration(e.target.value)}
                           className="w-full rounded border px-2 py-1.5 text-sm"
@@ -306,6 +314,8 @@ export default function SubscriptionsPage() {
                           <option value="365">365 days (1 year)</option>
                         </select>
                         <select
+                          id="status-select"
+                          name="status"
                           value={subscriptionStatus}
                           onChange={(e) => setSubscriptionStatus(e.target.value)}
                           className="w-full rounded border px-2 py-1.5 text-sm"
