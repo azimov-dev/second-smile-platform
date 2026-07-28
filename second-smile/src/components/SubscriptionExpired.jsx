@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
-import { AlertTriangle, CheckCircle, Mail, Send } from "lucide-react";
+import { AlertTriangle, CheckCircle, Mail, Send, RefreshCw } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useLanguage } from "../i18n/LanguageContext.jsx";
 import { apiClient } from "../api/client";
 import { useAuth } from "../features/auth/useAuth";
+import { useClinic } from "../context/ClinicContext.jsx";
 
 export default function SubscriptionExpired() {
   const { t } = useLanguage();
   const { token, role } = useAuth();
+  const { refreshClinic } = useClinic();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     loadPlans();
@@ -24,6 +27,15 @@ export default function SubscriptionExpired() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    try {
+      await refreshClinic();
+    } finally {
+      setRefreshing(false);
     }
   }
 
@@ -59,6 +71,15 @@ export default function SubscriptionExpired() {
             {t("subscription.expired.message") ||
               "Sizning obuna muddatingiz tugagan. Iltimos, admin bilan bog'laning yoki obunani yangilang."}
           </p>
+          {/* Refresh button - check if admin already assigned subscription */}
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 transition disabled:opacity-50"
+          >
+            <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+            {refreshing ? (t("common.checking") || "Tekshirilmoqda...") : (t("subscription.checkAgain") || "Qayta tekshirish")}
+          </button>
         </div>
 
         {/* Plans - Only show for admins */}
