@@ -174,8 +174,16 @@ export default function SubscriptionPage() {
                   </li>
                 </ul>
                 {p.id === plan?.id ? (
-                  <div className="mt-4 rounded-xl bg-sky-100 py-2 text-center text-sm font-medium text-sky-700">
-                    {t("subscription.currentPlanBadge") || "Joriy tarif"}
+                  <div className="mt-4 space-y-2">
+                    <div className="rounded-xl bg-sky-100 py-2 text-center text-sm font-medium text-sky-700">
+                      {t("subscription.currentPlanBadge") || "Joriy tarif"}
+                    </div>
+                    <button
+                      onClick={() => handlePay(p.id)}
+                      className="w-full rounded-xl bg-green-600 py-2 text-sm font-medium text-white hover:bg-green-700 transition"
+                    >
+                      {t("subscription.extendPlan") || "Uzaytirish (+30 kun)"}
+                    </button>
                   </div>
                 ) : (
                   <button

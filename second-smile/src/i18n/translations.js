@@ -490,6 +490,7 @@ export const translations = {
       warningBanner: "Obuna muddati: {days} kun qoldi.",
       renewLink: "Obunani yangilash",
       contactSupport: "Yordam: @azimov_7 (Telegram)",
+      extendPlan: "Uzaytirish (+30 kun)",
       expired: {
         title: "Obuna muddati tugadi",
         message: "Sizning obuna muddatingiz tugagan. Iltimos, admin bilan bog'laning yoki obunani yangilang.",
@@ -974,6 +975,7 @@ export const translations = {
       warningBanner: "Obuna muddati: {days} kun qoldi.",
       renewLink: "Obunani yangilaş",
       contactSupport: "Yordam: @azimov_7 (Telegram)",
+      extendPlan: "Uzaytiriş (+30 kun)",
       expired: {
         title: "Obuna muddati tugadi",
         message: "Sizning obuna muddatingiz tugagan. Iltimos, admin bilan boğlaning yoki obunani yangilang.",
@@ -1458,6 +1460,7 @@ export const translations = {
       warningBanner: "Обуна муддати: {days} кун қолди.",
       renewLink: "Обунани янгилаш",
       contactSupport: "Ёрдам: @azimov_7 (Telegram)",
+      extendPlan: "Узайтириш (+30 кун)",
       expired: {
         title: "Обуна муддати тугади",
         message: "Сизнинг обуна муддатингиз тугаган. Илтимос, админ билан боғланинг ёки обунани янгиланг.",
@@ -1958,6 +1961,7 @@ export const translations = {
       warningBanner: "Срок подписки: осталось {days} дней.",
       renewLink: "Продлить подписку",
       contactSupport: "Помощь: @azimov_7 (Telegram)",
+      extendPlan: "Продлить (+30 дней)",
       expired: {
         title: "Подписка истекла",
         message: "Ваша подписка истекла. Пожалуйста, свяжитесь с администратором или продлите подписку.",
@@ -2453,6 +2457,7 @@ export const translations = {
       warningBanner: "Subscription: {days} days remaining.",
       renewLink: "Renew subscription",
       contactSupport: "Help: @azimov_7 (Telegram)",
+      extendPlan: "Extend (+30 days)",
       expired: {
         title: "Subscription expired",
         message: "Your subscription has expired. Please contact the administrator or renew your subscription.",
