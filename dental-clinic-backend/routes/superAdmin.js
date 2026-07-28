@@ -514,23 +514,34 @@ router.post("/clinics/:id/subscription", async (req, res) => {
     const plan = await Plan.findByPk(plan_id);
     if (!plan) return res.status(404).json({ message: "Plan not found" });
 
-    // Deactivate any existing active subscription
-    await Subscription.update(
-      { status: "cancelled" },
-      { where: { clinic_id: clinicId, status: ["active", "trial"] } },
-    );
-
-    // Create new subscription (trial or active based on status param)
     const days = duration_days || (status === "trial" ? (plan.trial_days || 14) : 30);
     const subStatus = status === "trial" ? "trial" : "active";
-    const sub = await Subscription.create({
-      clinic_id: clinicId,
-      plan_id: plan.id,
-      status: subStatus,
-      current_period_start: new Date(),
-      current_period_end: new Date(Date.now() + days * 24 * 60 * 60 * 1000),
-      trial_ends_at: subStatus === "trial" ? new Date(Date.now() + days * 24 * 60 * 60 * 1000) : null,
-    });
+    const periodEnd = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+
+    // Check if clinic already has a subscription
+    let sub = await Subscription.findOne({ where: { clinic_id: clinicId } });
+
+    if (sub) {
+      // Update existing subscription
+      await sub.update({
+        plan_id: plan.id,
+        status: subStatus,
+        current_period_start: new Date(),
+        current_period_end: periodEnd,
+        trial_ends_at: subStatus === "trial" ? periodEnd : null,
+        cancelled_at: null,
+      });
+    } else {
+      // Create new subscription
+      sub = await Subscription.create({
+        clinic_id: clinicId,
+        plan_id: plan.id,
+        status: subStatus,
+        current_period_start: new Date(),
+        current_period_end: periodEnd,
+        trial_ends_at: subStatus === "trial" ? periodEnd : null,
+      });
+    }
 
     res.status(201).json(sub);
   } catch (err) {
