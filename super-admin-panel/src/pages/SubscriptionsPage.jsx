@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { adminApi } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
-import { RefreshCw, AlertTriangle, Search } from "lucide-react";
+import { RefreshCw, AlertTriangle, Search, X, MoreVertical, Ban } from "lucide-react";
 
 export default function SubscriptionsPage() {
   const { token } = useAuth();
@@ -263,25 +263,24 @@ export default function SubscriptionsPage() {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setShowAssign(showAssign === c.id ? null : c.id)}
-                        className="rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-700"
-                      >
-                        {c.subscription ? "Change" : "Assign"}
-                      </button>
-                      {c.subscription && (
-                        <button
-                          onClick={() => handleCancel(c.id)}
-                          disabled={actionLoading === c.id}
-                          className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
-                        >
-                          Cancel
-                        </button>
-                      )}
-                    </div>
-                    {showAssign === c.id && (
-                      <div className="mt-3 rounded-lg border bg-gray-50 p-3 space-y-2">
+                    {showAssign === c.id ? (
+                      <div className="rounded-lg border bg-gray-50 p-3 space-y-2 min-w-[240px]">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-semibold text-gray-700">
+                            {c.subscription ? "Change Plan" : "Assign Plan"}
+                          </span>
+                          <button
+                            onClick={() => {
+                              setShowAssign(null);
+                              setSelectedPlan("");
+                              setDuration("30");
+                              setSubscriptionStatus("trial");
+                            }}
+                            className="p-1 text-gray-400 hover:text-gray-600"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
                         <select
                           value={selectedPlan}
                           onChange={(e) => setSelectedPlan(e.target.value)}
@@ -313,13 +312,45 @@ export default function SubscriptionsPage() {
                           <option value="trial">Trial (free period)</option>
                           <option value="active">Active (paid)</option>
                         </select>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setShowAssign(null);
+                              setSelectedPlan("");
+                              setDuration("30");
+                              setSubscriptionStatus("trial");
+                            }}
+                            className="flex-1 rounded-lg border px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => handleAssign(c.id)}
+                            disabled={!selectedPlan || actionLoading === c.id}
+                            className="flex-1 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 disabled:bg-gray-300"
+                          >
+                            {actionLoading === c.id ? "Saving..." : "Save"}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
                         <button
-                          onClick={() => handleAssign(c.id)}
-                          disabled={!selectedPlan || actionLoading === c.id}
-                          className="w-full rounded-lg bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 disabled:bg-gray-300"
+                          onClick={() => setShowAssign(c.id)}
+                          className="rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sky-700"
                         >
-                          {actionLoading === c.id ? "Saving..." : "Activate Subscription"}
+                          {c.subscription ? "Change" : "Assign"}
                         </button>
+                        {c.subscription && c.subscription.status !== "cancelled" && (
+                          <button
+                            onClick={() => handleCancel(c.id)}
+                            disabled={actionLoading === c.id}
+                            title="Cancel subscription"
+                            className="rounded-lg border border-red-200 p-1.5 text-red-600 hover:bg-red-50"
+                          >
+                            <Ban className="h-4 w-4" />
+                          </button>
+                        )}
                       </div>
                     )}
                   </td>
