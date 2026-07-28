@@ -496,6 +496,8 @@ export const translations = {
       renewLink: "Obunani yangilash",
       contactSupport: "Yordam: @azimov_7 (Telegram)",
       extendPlan: "Uzaytirish (+30 kun)",
+      checkAgain: "Qayta tekshirish",
+      checking: "Tekshirilmoqda...",
       expired: {
         title: "Obuna muddati tugadi",
         message: "Sizning obuna muddatingiz tugagan. Iltimos, admin bilan bog'laning yoki obunani yangilang.",
@@ -988,6 +990,8 @@ export const translations = {
       renewLink: "Obunani yangilaş",
       contactSupport: "Yordam: @azimov_7 (Telegram)",
       extendPlan: "Uzaytiriş (+30 kun)",
+      checkAgain: "Qayta tekşiriş",
+      checking: "Tekşirilmoqda...",
       expired: {
         title: "Obuna muddati tugadi",
         message: "Sizning obuna muddatingiz tugagan. Iltimos, admin bilan boğlaning yoki obunani yangilang.",
@@ -1480,6 +1484,8 @@ export const translations = {
       renewLink: "Обунани янгилаш",
       contactSupport: "Ёрдам: @azimov_7 (Telegram)",
       extendPlan: "Узайтириш (+30 кун)",
+      checkAgain: "Қайта текшириш",
+      checking: "Текширилмоқда...",
       expired: {
         title: "Обуна муддати тугади",
         message: "Сизнинг обуна муддатингиз тугаган. Илтимос, админ билан боғланинг ёки обунани янгиланг.",
@@ -1988,6 +1994,8 @@ export const translations = {
       renewLink: "Продлить подписку",
       contactSupport: "Помощь: @azimov_7 (Telegram)",
       extendPlan: "Продлить (+30 дней)",
+      checkAgain: "Проверить снова",
+      checking: "Проверка...",
       expired: {
         title: "Подписка истекла",
         message: "Ваша подписка истекла. Пожалуйста, свяжитесь с администратором или продлите подписку.",
@@ -2491,6 +2499,8 @@ export const translations = {
       renewLink: "Renew subscription",
       contactSupport: "Help: @azimov_7 (Telegram)",
       extendPlan: "Extend (+30 days)",
+      checkAgain: "Check again",
+      checking: "Checking...",
       expired: {
         title: "Subscription expired",
         message: "Your subscription has expired. Please contact the administrator or renew your subscription.",

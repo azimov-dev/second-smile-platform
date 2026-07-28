@@ -78,7 +78,7 @@ export default function SubscriptionExpired() {
             className="mt-4 inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 transition disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
-            {refreshing ? (t("common.checking") || "Tekshirilmoqda...") : (t("subscription.checkAgain") || "Qayta tekshirish")}
+            {refreshing ? (t("subscription.checking") || "Tekshirilmoqda...") : (t("subscription.checkAgain") || "Qayta tekshirish")}
           </button>
         </div>
 

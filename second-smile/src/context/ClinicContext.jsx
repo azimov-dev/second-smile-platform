@@ -17,11 +17,15 @@ export function ClinicProvider({ children }) {
 
       // Check subscription status from response
       const sub = data?.subscription;
+      console.log("Subscription check:", sub);
       if (sub) {
         const isExpired = sub.days_left !== null && sub.days_left <= 0;
         const isCancelled = sub.status === "cancelled" || sub.status === "expired";
-        setSubscriptionExpired(isExpired || isCancelled);
+        const shouldShowExpired = isExpired || isCancelled;
+        console.log("isExpired:", isExpired, "isCancelled:", isCancelled, "shouldShowExpired:", shouldShowExpired);
+        setSubscriptionExpired(shouldShowExpired);
       } else {
+        console.log("No subscription found");
         setSubscriptionExpired(true);
       }
     } catch (err) {
