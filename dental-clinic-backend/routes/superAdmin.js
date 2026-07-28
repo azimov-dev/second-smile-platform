@@ -518,8 +518,11 @@ router.post("/clinics/:id/subscription", async (req, res) => {
     const subStatus = status === "trial" ? "trial" : "active";
     const periodEnd = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
-    // Check if clinic already has a subscription
-    let sub = await Subscription.findOne({ where: { clinic_id: clinicId } });
+    // Check if clinic already has a subscription (get the most recent one)
+    let sub = await Subscription.findOne({
+      where: { clinic_id: clinicId },
+      order: [["created_at", "DESC"]],
+    });
 
     if (sub) {
       // Update existing subscription
@@ -542,6 +545,14 @@ router.post("/clinics/:id/subscription", async (req, res) => {
         trial_ends_at: subStatus === "trial" ? periodEnd : null,
       });
     }
+
+    console.log("Subscription updated/created:", {
+      clinic_id: clinicId,
+      status: sub.status,
+      days: days,
+      period_end: periodEnd,
+      trial_ends_at: sub.trial_ends_at
+    });
 
     res.status(201).json(sub);
   } catch (err) {

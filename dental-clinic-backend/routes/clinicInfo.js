@@ -27,6 +27,13 @@ router.get("/info", async (req, res) => {
       days_left: daysLeft,
       is_trial: subscription.status === "trial",
     };
+
+    console.log(`[/clinic/info] ${clinic.slug}:`, {
+      sub_id: subscription.id,
+      status: subscription.status,
+      period_end: subscription.current_period_end,
+      days_left: daysLeft
+    });
   }
 
   res.json({
