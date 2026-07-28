@@ -85,36 +85,42 @@ router.post("/pay", auth, async (req, res) => {
   const db = require("../models");
   const { plan_id } = req.body;
 
-  const plan = plan_id
-    ? await db.Plan.findByPk(plan_id)
-    : null;
+  if (!plan_id) {
+    return res.status(400).json({ message: "plan_id required" });
+  }
 
+  const plan = await db.Plan.findByPk(plan_id);
+  if (!plan) {
+    return res.status(404).json({ message: "Plan not found" });
+  }
+
+  // Get existing subscription
   let subscription = await db.Subscription.findOne({
     where: { clinic_id: req.clinicId },
     include: [{ model: db.Plan, as: "plan" }],
-    order: [["created_at", "DESC"]],
   });
 
-  if (plan_id && plan && (!subscription || subscription.plan_id !== plan_id)) {
+  // If no subscription exists, create one with current period (don't change if already exists)
+  if (!subscription) {
+    const trialDays = plan.trial_days || 14;
     subscription = await db.Subscription.create({
       clinic_id: req.clinicId,
       plan_id: plan.id,
       status: "trial",
       current_period_start: new Date(),
-      current_period_end: new Date(),
+      current_period_end: new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000),
+      trial_ends_at: new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000),
     });
     subscription.plan = plan;
   }
 
-  if (!subscription) {
-    return res.status(400).json({ message: "No subscription found" });
-  }
-
-  const amount = subscription.plan.price_monthly;
+  // Build payment URL with selected plan (payment callback will update the subscription)
+  const amount = plan.price_monthly;
   const returnUrl = req.headers.origin || "https://second-smile.uz";
 
   const url = buildCheckoutUrl({
     subscriptionId: subscription.id,
+    planId: plan.id,
     amount,
     returnUrl,
   });
