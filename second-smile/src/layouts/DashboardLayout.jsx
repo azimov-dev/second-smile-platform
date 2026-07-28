@@ -421,48 +421,64 @@ function SubscriptionWarning({ clinic, t, role }) {
 
   if (!isTrial && !isExpiring && !isWarning) return null;
 
-  let bgColor = "bg-blue-50 border-blue-200";
+  let bgColor = "bg-gradient-to-r from-blue-50 to-sky-50 border-blue-200";
   let textColor = "text-blue-800";
+  let iconBg = "bg-blue-100";
   let iconColor = "text-blue-600";
   let Icon = Clock;
 
   if (isExpiring) {
-    bgColor = "bg-red-50 border-red-200";
+    bgColor = "bg-gradient-to-r from-red-50 to-rose-50 border-red-200";
     textColor = "text-red-800";
+    iconBg = "bg-red-100";
     iconColor = "text-red-600";
     Icon = AlertTriangle;
   } else if (isWarning) {
-    bgColor = "bg-yellow-50 border-yellow-200";
+    bgColor = "bg-gradient-to-r from-yellow-50 to-amber-50 border-yellow-200";
     textColor = "text-yellow-800";
+    iconBg = "bg-yellow-100";
     iconColor = "text-yellow-600";
     Icon = AlertTriangle;
   }
 
   let message = "";
   if (isTrial) {
-    message = t("subscription.trialWarning") || `Sinov muddati: ${daysLeft} kun qoldi`;
+    message = (t("subscription.trialBanner") || "Sinov muddati: {days} kun qoldi. Obunani yangilang.").replace("{days}", daysLeft);
   } else if (isExpiring) {
-    message = t("subscription.expiringWarning") || `Obuna muddati tugayapti: ${daysLeft} kun qoldi!`;
+    message = (t("subscription.expiringBanner") || "Obuna muddati tugayapti: {days} kun qoldi!").replace("{days}", daysLeft);
   } else if (isWarning) {
-    message = t("subscription.warningDays") || `Obuna muddati: ${daysLeft} kun qoldi`;
+    message = (t("subscription.warningBanner") || "Obuna muddati: {days} kun qoldi.").replace("{days}", daysLeft);
   }
 
+  const contactText = t("subscription.contactSupport") || "Yordam: @azimov_7 (Telegram)";
+
   return (
-    <div className={`mx-2 mt-2 md:mx-4 rounded-lg border ${bgColor} px-4 py-3 flex items-center justify-between`}>
-      <div className="flex items-center gap-3">
-        <Icon className={`h-5 w-5 ${iconColor}`} />
-        <span className={`text-sm font-medium ${textColor}`}>
-          {message.replace("${daysLeft}", daysLeft)}
-        </span>
+    <div className={`mx-2 mt-2 md:mx-4 rounded-xl border ${bgColor} px-4 py-3 shadow-sm`}>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-lg ${iconBg}`}>
+            <Icon className={`h-5 w-5 ${iconColor}`} />
+          </div>
+          <div>
+            <p className={`text-sm font-semibold ${textColor}`}>{message}</p>
+            <p className={`text-xs ${textColor} opacity-75 mt-0.5`}>{contactText}</p>
+          </div>
+        </div>
+        {role === "admin" && (
+          <a
+            href="/admin/subscription"
+            className={`inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium ${
+              isExpiring
+                ? "bg-red-600 text-white hover:bg-red-700"
+                : isWarning
+                ? "bg-yellow-600 text-white hover:bg-yellow-700"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            } transition-colors shadow-sm`}
+          >
+            {t("subscription.renewLink") || "Obunani yangilash"}
+          </a>
+        )}
       </div>
-      {role === "admin" && (
-        <a
-          href="/admin/subscription"
-          className={`text-sm font-medium underline ${textColor} hover:opacity-80`}
-        >
-          {t("subscription.renew") || "Obunani yangilash"}
-        </a>
-      )}
     </div>
   );
 }
