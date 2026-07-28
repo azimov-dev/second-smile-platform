@@ -1,11 +1,26 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { Send, Mail } from "lucide-react";
 
 import { loginUser } from "../features/auth/authSlice.jsx";
 import { useAuth } from "../features/auth/useAuth";
 
 import { useLanguage } from "../i18n/LanguageContext.jsx";
+
+const errorMap = {
+  "Clinic is suspended": "clinicSuspended",
+  "Clinic not found": "clinicNotFound",
+};
+
+function translateError(message, t) {
+  if (!message) return message;
+  const key = errorMap[message];
+  if (key) {
+    return t(`errors.${key}`) || message;
+  }
+  return message;
+}
 
 export default function LoginPage() {
   const { t } = useLanguage();
@@ -83,7 +98,7 @@ export default function LoginPage() {
 
       {(localError || error) && (
         <div className="rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700">
-          {localError || error}
+          {translateError(localError || error, t)}
         </div>
       )}
 
@@ -98,6 +113,31 @@ export default function LoginPage() {
       </button>
 
       <p className="text-[11px] text-center text-slate-400">{t("auth.desc")}</p>
+
+      {/* New Clinic Registration Contact */}
+      <div className="mt-6 pt-6 border-t border-slate-200">
+        <p className="text-xs font-medium text-slate-600 text-center mb-3">
+          {t("auth.registerNewClinicDesc") || "Klinikangiz uchun tizimdan foydalanmoqchimisiz?"}
+        </p>
+        <div className="flex gap-2">
+          <a
+            href="https://t.me/azimov_7"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#0088cc] px-3 py-2 text-xs font-medium text-white hover:bg-[#007ab8] transition"
+          >
+            <Send className="h-3.5 w-3.5" />
+            Telegram
+          </a>
+          <a
+            href="mailto:info@second-smile.uz"
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-slate-700 px-3 py-2 text-xs font-medium text-white hover:bg-slate-800 transition"
+          >
+            <Mail className="h-3.5 w-3.5" />
+            Email
+          </a>
+        </div>
+      </div>
     </form>
   );
 }
